@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
@@ -109,7 +109,12 @@ const Team = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={team} columns={columns} />
+        <DataGrid 
+          checkboxSelection 
+          rows={team} 
+          columns={columns} 
+          components={{ Toolbar: GridToolbar }}
+        />
       </Box>
     </Box>
   );

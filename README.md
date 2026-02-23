@@ -56,6 +56,26 @@ An intelligent, full-stack admin dashboard built with **React**, **Material UI**
 - **Location**: Integrated into AI Pulse and the AI Assistant
 - **What it does**: Flags anomalies like sudden drops in activity, unusually large expenses, or overdue invoices as part of the AI briefing and chat responses.
 
+### 7. Kanban Board (Real-Time)
+- **Location**: Kanban Board page (`/kanban`)
+- **What it does**: A drag-and-drop task board for project management.
+- **Tech**: `@hello-pangea/dnd` for drag-and-drop, synced in real-time across users via `blink.realtime`.
+
+### 8. Global Search
+- **Location**: Topbar search input
+- **What it does**: Instantly searches across Team, Contacts, and Invoices. Displays results in a popover with quick navigation.
+- **Tech**: Parallel database queries using `blink.db`.
+
+### 9. AI Chat History
+- **Location**: Floating AI Assistant
+- **What it does**: Persists your conversations with the AI Assistant to the database, so your history is available even after page reloads.
+- **Tech**: Persistent `chat_messages` table.
+
+### 10. Pro Upgrade Flow
+- **Location**: Upgrade page (`/upgrade`)
+- **What it does**: A professional pricing page showcasing Basic and Pro features. 
+- **Tech**: Integrated with `blink.notifications` for alert triggers.
+
 ---
 
 ## Pages & Routes

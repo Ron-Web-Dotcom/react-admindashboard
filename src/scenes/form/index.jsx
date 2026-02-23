@@ -64,6 +64,16 @@ const Form = () => {
         }
       });
       setAiLabel(`Suggested: ${object.priority} Priority - ${object.persona}`);
+      
+      // If high priority, notify admin via email
+      if (object.priority === "High" && user?.email) {
+        await blink.notifications.email({
+          to: user.email, // Notifying the current user (admin) for demo
+          subject: "High Priority User Detected",
+          html: `<h1>High Priority Lead</h1><p>A new high priority user <b>${values.firstName} ${values.lastName}</b> was analyzed.</p><p>Persona: ${object.persona}</p>`
+        });
+        toast.success("Admin notified via email!");
+      }
     } catch (error) {
       console.error("AI Labeling failed:", error);
     } finally {

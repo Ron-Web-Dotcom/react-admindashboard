@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useDashboardData } from "../../hooks/useDashboardData";
@@ -83,7 +83,12 @@ const Invoices = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={invoices} columns={columns} />
+        <DataGrid 
+          checkboxSelection 
+          rows={invoices} 
+          columns={columns} 
+          components={{ Toolbar: GridToolbar }}
+        />
       </Box>
     </Box>
   );

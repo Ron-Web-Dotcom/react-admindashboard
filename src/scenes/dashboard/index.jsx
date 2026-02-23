@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Typography, useTheme, CircularProgress } from "@mui/material";
+import { Box, Button, IconButton, Typography, useTheme, Skeleton } from "@mui/material";
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import EmailIcon from "@mui/icons-material/Email";
@@ -12,6 +12,7 @@ import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
 import AIPulse from "../../components/AIPulse";
+import AnomalyBanner from "../../components/AnomalyBanner";
 import { useDashboardData } from "../../hooks/useDashboardData";
 import { useState } from "react";
 import { blink } from "../../lib/blink";
@@ -57,8 +58,16 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
-        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      <Box m="20px">
+        <Skeleton variant="rectangular" width="200px" height="40px" sx={{ mb: 2 }} />
+        <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gridAutoRows="140px" gap="20px">
+          <Skeleton variant="rectangular" gridColumn="span 12" height="140px" />
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} variant="rectangular" gridColumn="span 3" height="140px" />
+          ))}
+          <Skeleton variant="rectangular" gridColumn="span 8" gridRow="span 2" height="300px" />
+          <Skeleton variant="rectangular" gridColumn="span 4" gridRow="span 2" height="300px" />
+        </Box>
       </Box>
     );
   }
@@ -90,6 +99,8 @@ const Dashboard = () => {
           </Button>
         </Box>
       </Box>
+
+      <AnomalyBanner dashboardData={{ team, contacts, invoices, transactions, loading }} />
 
       {/* GRID & CHARTS */}
       <Box

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import { Box, Typography, useTheme, IconButton, Paper, TextField, InputAdornment, Collapse } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import { Box, Typography, useTheme, IconButton, Paper, TextField, InputAdornment, Collapse, CircularProgress } from "@mui/material";
 import { tokens } from "../theme";
 import SearchIcon from "@mui/icons-material/Search";
 import { useAgent, Agent, dbTools, useBlinkAuth } from "@blinkdotnew/react";
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { blink } from "../lib/blink";
 
 const dataAgent = new Agent({
   model: "google/gemini-3-flash",
@@ -30,7 +32,9 @@ const AIAgentChat = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated } = useBlinkAuth();
+  const { user, isAuthenticated } = useBlinkAuth();
+  const scrollRef = useRef(null);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
   const {
     messages,
@@ -38,8 +42,82 @@ const AIAgentChat = () => {
     handleInputChange,
     handleSubmit,
     isLoading,
-    clearMessages
-  } = useAgent({ agent: dataAgent });
+    clearMessages,
+    setMessages
+  } = useAgent({ 
+    agent: dataAgent,
+    onFinish: async (message) => {
+      if (user?.id) {
+        // Save assistant message
+        await blink.db.chatMessages.create({
+          id: `msg_${Date.now()}_assistant`,
+          userId: user.id,
+          role: "assistant",
+          content: message.content
+        });
+      }
+    }
+  });
+
+  const loadHistory = async () => {
+    if (!user?.id) return;
+    setIsHistoryLoading(true);
+    try {
+      const history = await blink.db.chatMessages.list({
+        orderBy: { createdAt: 'asc' },
+        limit: 50
+      });
+      if (history.length > 0) {
+        setMessages(history.map(m => ({
+          id: m.id,
+          role: m.role,
+          content: m.content
+        })));
+      }
+    } catch (error) {
+      console.error("Failed to load chat history:", error);
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    if (!user?.id) return;
+    if (window.confirm("Clear all chat history?")) {
+      await blink.db.chatMessages.deleteMany({
+        where: { userId: user.id }
+      });
+      clearMessages();
+    }
+  };
+
+  const onUserSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || !user?.id) return;
+
+    const userMessageContent = input;
+    // Save user message
+    await blink.db.chatMessages.create({
+      id: `msg_${Date.now()}_user`,
+      userId: user.id,
+      role: "user",
+      content: userMessageContent
+    });
+
+    handleSubmit(e);
+  };
+
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      loadHistory();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, isLoading]);
 
   if (!isAuthenticated) return null;
 
@@ -76,14 +154,26 @@ const AIAgentChat = () => {
                 Admin AI Assistant
               </Typography>
             </Box>
-            <IconButton onClick={() => setIsOpen(false)} size="small" sx={{ color: colors.primary[500] }}>
-              <CloseIcon />
-            </IconButton>
+            <Box display="flex" alignItems="center">
+              <IconButton onClick={handleClearHistory} size="small" sx={{ color: colors.primary[500] }}>
+                <DeleteOutlineIcon />
+              </IconButton>
+              <IconButton onClick={() => setIsOpen(false)} size="small" sx={{ color: colors.primary[500] }}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
           </Box>
 
           {/* Messages */}
-          <Box sx={{ flex: 1, p: 2, overflowY: "auto", display: "flex", flexDirection: "column", gap: "15px" }}>
-            {messages.length === 0 && (
+          <Box 
+            ref={scrollRef}
+            sx={{ flex: 1, p: 2, overflowY: "auto", display: "flex", flexDirection: "column", gap: "15px" }}
+          >
+            {isHistoryLoading ? (
+              <Box display="flex" justifyContent="center" py={4}>
+                <CircularProgress size={24} sx={{ color: colors.greenAccent[500] }} />
+              </Box>
+            ) : messages.length === 0 ? (
               <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" gap="10px" sx={{ opacity: 0.6 }}>
                 <PsychologyIcon sx={{ fontSize: "64px" }} />
                 <Typography textAlign="center">
@@ -91,7 +181,8 @@ const AIAgentChat = () => {
                   (e.g., "Show me top invoices", "List all admins")
                 </Typography>
               </Box>
-            )}
+            ) : null}
+            
             {messages.map((m) => (
               <Box
                 key={m.id}
@@ -117,7 +208,7 @@ const AIAgentChat = () => {
           </Box>
 
           {/* Input */}
-          <Box component="form" onSubmit={handleSubmit} sx={{ p: 2, borderTop: `1px solid ${colors.grey[800]}`, backgroundColor: colors.primary[400] }}>
+          <Box component="form" onSubmit={onUserSubmit} sx={{ p: 2, borderTop: `1px solid ${colors.grey[800]}`, backgroundColor: colors.primary[400] }}>
             <TextField
               fullWidth
               variant="outlined"

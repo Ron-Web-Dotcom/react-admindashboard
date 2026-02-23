@@ -16,6 +16,8 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined';
+import NewReleasesOutlinedIcon from '@mui/icons-material/NewReleasesOutlined';
 import { useBlinkAuth } from "@blinkdotnew/react";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -36,7 +38,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
-const Sidebar = () => {
+const Sidebar = ({ isSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -46,6 +48,7 @@ const Sidebar = () => {
   return (
     <Box
       sx={{
+        display: isSidebar ? "block" : "none",
         "& .pro-sidebar-inner": {
           background: `${colors.primary[400]} !important`,
         },
@@ -134,13 +137,15 @@ const Sidebar = () => {
             >
               Data
             </Typography>
-            <Item
-              title="Manage Team"
-              to="/team"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            {user?.metadata?.role === "Admin" && (
+              <Item
+                title="Manage Team"
+                to="/team"
+                icon={<PeopleOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
             <Item
               title="Contacts Information"
               to="/contacts"
@@ -178,9 +183,23 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
+              title="Kanban Board"
+              to="/kanban"
+              icon={<ViewKanbanOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
               title="FAQ Page"
               to="/faq"
               icon={<HelpOutlineOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Upgrade to Pro"
+              to="/upgrade"
+              icon={<NewReleasesOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
