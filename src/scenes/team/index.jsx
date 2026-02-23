@@ -1,15 +1,16 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataTeam } from "../../data/mockData";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
+import { useDashboardData } from "../../hooks/useDashboardData";
 
 const Team = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { team, loading } = useDashboardData();
   const columns = [
     { field: "id", headerName: "ID" },
     {
@@ -68,6 +69,14 @@ const Team = () => {
     },
   ];
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
+        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      </Box>
+    );
+  }
+
   return (
     <Box m="20px">
       <Header title="TEAM" subtitle="Managing the Team Members" />
@@ -100,7 +109,7 @@ const Team = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataTeam} columns={columns} />
+        <DataGrid checkboxSelection rows={team} columns={columns} />
       </Box>
     </Box>
   );

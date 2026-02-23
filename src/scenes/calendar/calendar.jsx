@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FullCalendar, { formatDate } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -11,44 +11,95 @@ import {
   ListItemText,
   Typography,
   useTheme,
+  CircularProgress
 } from "@mui/material";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
+import { blink } from "../../lib/blink";
+import { useBlinkAuth } from "@blinkdotnew/react";
+import { toast } from "react-hot-toast";
 
 const Calendar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { user, isAuthenticated } = useBlinkAuth();
   const [currentEvents, setCurrentEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDateClick = (selected) => {
+  const fetchEvents = async () => {
+    if (!isAuthenticated || !user?.id) return;
+    setLoading(true);
+    try {
+      const events = await blink.db.calendarEvents.list();
+      // SQLite returns allDay as "0"/"1"
+      setCurrentEvents(events.map(e => ({
+        ...e,
+        allDay: Number(e.allDay) > 0
+      })));
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, [isAuthenticated]);
+
+  const handleDateClick = async (selected) => {
     const title = prompt("Please enter a new title for your event");
     const calendarApi = selected.view.calendar;
     calendarApi.unselect();
 
     if (title) {
-      calendarApi.addEvent({
-        id: `${selected.dateStr}-${title}`,
-        title,
-        start: selected.startStr,
-        end: selected.endStr,
-        allDay: selected.allDay,
-      });
+      try {
+        const newEvent = {
+          id: `event_${Date.now()}`,
+          userId: user.id,
+          title,
+          start: selected.startStr,
+          end: selected.endStr,
+          allDay: selected.allDay ? 1 : 0
+        };
+        await blink.db.calendarEvents.create(newEvent);
+        
+        calendarApi.addEvent({
+          ...newEvent,
+          allDay: selected.allDay
+        });
+        toast.success("Event added!");
+      } catch (error) {
+        console.error("Failed to add event:", error);
+        toast.error("Failed to add event");
+      }
     }
   };
 
-  const handleEventClick = (selected) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the event '${selected.event.title}'`
-      )
-    ) {
-      selected.event.remove();
+  const handleEventClick = async (selected) => {
+    if (window.confirm(`Are you sure you want to delete the event '${selected.event.title}'?`)) {
+      try {
+        await blink.db.calendarEvents.delete(selected.event.id);
+        selected.event.remove();
+        toast.success("Event deleted!");
+      } catch (error) {
+        console.error("Failed to delete event:", error);
+        toast.error("Failed to delete event");
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
+        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      </Box>
+    );
+  }
 
   return (
     <Box m="20px">
-      <Header title="Calendar" subtitle="Full Calendar Interactive Page" />
+      <Header title="CALENDAR" subtitle="Full Calendar Interactive Page" />
 
       <Box display="flex" justifyContent="space-between">
         {/* CALENDAR SIDEBAR */}
@@ -108,19 +159,7 @@ const Calendar = () => {
             dayMaxEvents={true}
             select={handleDateClick}
             eventClick={handleEventClick}
-            eventsSet={(events) => setCurrentEvents(events)}
-            initialEvents={[
-              {
-                id: "12315",
-                title: "All-day event",
-                date: "2022-09-14",
-              },
-              {
-                id: "5123",
-                title: "Timed event",
-                date: "2022-09-28",
-              },
-            ]}
+            initialEvents={currentEvents}
           />
         </Box>
       </Box>

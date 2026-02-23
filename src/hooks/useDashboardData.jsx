@@ -63,6 +63,18 @@ export function useDashboardData() {
           cost: parseFloat(item.cost)
         })));
       }
+
+      // Seed FAQs
+      const faqCount = await blink.db.faqs.count();
+      if (faqCount === 0) {
+        await blink.db.faqs.createMany([
+          { id: 'faq_1', userId: user.id, question: 'An Important Question', answer: 'This is an answer to an important question.' },
+          { id: 'faq_2', userId: user.id, question: 'Another Important Question', answer: 'This is another answer to an important question.' },
+          { id: 'faq_3', userId: user.id, question: 'Your Favorite Question', answer: 'This is an answer to your favorite question.' },
+          { id: 'faq_4', userId: user.id, question: 'Some Random Question', answer: 'This is an answer to some random question.' },
+          { id: 'faq_5', userId: user.id, question: 'The Final Question', answer: 'This is an answer to the final question.' },
+        ]);
+      }
     } catch (err) {
       console.error('Seeding failed:', err);
     }

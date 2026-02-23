@@ -1,12 +1,13 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataInvoices } from "../../data/mockData";
 import Header from "../../components/Header";
+import { useDashboardData } from "../../hooks/useDashboardData";
 
 const Invoices = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { invoices, loading } = useDashboardData();
   const columns = [
     { field: "id", headerName: "ID" },
     {
@@ -42,6 +43,14 @@ const Invoices = () => {
     },
   ];
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
+        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      </Box>
+    );
+  }
+
   return (
     <Box m="20px">
       <Header title="INVOICES" subtitle="List of Invoice Balances" />
@@ -74,7 +83,7 @@ const Invoices = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataInvoices} columns={columns} />
+        <DataGrid checkboxSelection rows={invoices} columns={columns} />
       </Box>
     </Box>
   );

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { blink } from "../lib/blink";
 import { useBlinkAuth } from "@blinkdotnew/react";
 import PsychologyIcon from '@mui/icons-material/Psychology';
+import { toast } from "react-hot-toast";
 
 const LineChart = ({ isDashboard = false }) => {
   const theme = useTheme();
@@ -56,7 +57,12 @@ const LineChart = ({ isDashboard = false }) => {
 
     setIsAiLoading(true);
     try {
-      const currentRevenue = data[0].data;
+      const currentRevenue = data[0]?.data || [];
+      if (currentRevenue.length === 0) {
+        toast.error("Not enough data to forecast");
+        setIsAiLoading(false);
+        return;
+      }
       const { object } = await blink.ai.generateObject({
         prompt: `Predict the next 3 data points for revenue based on this historical data: ${JSON.stringify(currentRevenue)}. 
         Provide logical estimates for the future x values (dates) and y values (revenue).`,
