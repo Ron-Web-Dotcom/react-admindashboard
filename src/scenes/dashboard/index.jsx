@@ -1,6 +1,5 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button, IconButton, Typography, useTheme, CircularProgress } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import EmailIcon from "@mui/icons-material/Email";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
@@ -12,10 +11,57 @@ import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
+import AIPulse from "../../components/AIPulse";
+import { useDashboardData } from "../../hooks/useDashboardData";
+import { useState } from "react";
+import { blink } from "../../lib/blink";
+import { toast } from "react-hot-toast";
+import PsychologyIcon from '@mui/icons-material/Psychology';
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { team, contacts, invoices, transactions, loading, error } = useDashboardData();
+  const [isReportLoading, setIsReportLoading] = useState(false);
+
+  const handleDownloadReport = async () => {
+    setIsReportLoading(true);
+    try {
+      const summary = {
+        totalTeam: team.length,
+        totalInvoices: invoices.length,
+        revenue: invoices.reduce((acc, curr) => acc + parseFloat(curr.cost || 0), 0).toFixed(2),
+        recentTransactions: transactions.slice(0, 5)
+      };
+
+      const { text } = await blink.ai.generateText({
+        prompt: `Generate a professional, structured executive analytics report based on this dashboard data: ${JSON.stringify(summary)}. 
+        Include a summary, key findings, and strategic recommendations. Format it in Markdown.`,
+      });
+
+      const blob = new Blob([text], { type: "text/markdown" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `AdminBoard_Report_${new Date().toISOString().split('T')[0]}.md`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success("AI Executive Report Generated!");
+    } catch (error) {
+      console.error("Report generation failed:", error);
+      toast.error("Failed to generate AI report");
+    } finally {
+      setIsReportLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
+        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      </Box>
+    );
+  }
 
   return (
     <Box m="20px">
@@ -25,6 +71,8 @@ const Dashboard = () => {
 
         <Box>
           <Button
+            onClick={handleDownloadReport}
+            disabled={isReportLoading}
             sx={{
               backgroundColor: colors.blueAccent[700],
               color: colors.grey[100],
@@ -33,8 +81,12 @@ const Dashboard = () => {
               padding: "10px 20px",
             }}
           >
-            <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-            Download Reports
+            {isReportLoading ? (
+              <CircularProgress size={20} sx={{ mr: "10px", color: colors.grey[100] }} />
+            ) : (
+              <PsychologyIcon sx={{ mr: "10px" }} />
+            )}
+            {isReportLoading ? "Generating..." : "AI Executive Report"}
           </Button>
         </Box>
       </Box>
@@ -46,6 +98,9 @@ const Dashboard = () => {
         gridAutoRows="140px"
         gap="20px"
       >
+        {/* AI PULSE */}
+        <AIPulse dashboardData={{ team, contacts, invoices, transactions, loading }} />
+
         {/* ROW 1 */}
         <Box
           gridColumn="span 3"
@@ -55,7 +110,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
+            title={invoices.length.toString()}
             subtitle="Emails Sent"
             progress="0.75"
             increase="+14%"
@@ -74,7 +129,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="431,225"
+            title={transactions.length.toString()}
             subtitle="Sales Obtained"
             progress="0.50"
             increase="+21%"
@@ -93,7 +148,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="32,441"
+            title={contacts.length.toString()}
             subtitle="New Clients"
             progress="0.30"
             increase="+5%"
@@ -150,7 +205,7 @@ const Dashboard = () => {
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-                $59,342.32
+                ${invoices.reduce((acc, curr) => acc + parseFloat(curr.cost || 0), 0).toFixed(2)}
               </Typography>
             </Box>
             <Box>
@@ -183,7 +238,7 @@ const Dashboard = () => {
               Recent Transactions
             </Typography>
           </Box>
-          {mockTransactions.map((transaction, i) => (
+          {transactions.map((transaction, i) => (
             <Box
               key={`${transaction.txId}-${i}`}
               display="flex"
@@ -201,7 +256,7 @@ const Dashboard = () => {
                   {transaction.txId}
                 </Typography>
                 <Typography color={colors.grey[100]}>
-                  {transaction.user}
+                  {transaction.userName}
                 </Typography>
               </Box>
               <Box color={colors.grey[100]}>{transaction.date}</Box>
