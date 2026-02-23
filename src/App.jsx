@@ -13,7 +13,7 @@ import Pie from "./scenes/pie";
 import FAQ from "./scenes/faq";
 import Geography from "./scenes/geography";
 import { CssBaseline, ThemeProvider, Box, Typography, Button } from "@mui/material";
-import { ColorModeContext, useMode } from "./theme";
+import { ColorModeContext, useMode, tokens } from "./theme";
 import Calendar from "./scenes/calendar/calendar";
 import AIAgentChat from "./components/AIAgentChat";
 import { useBlinkAuth } from "@blinkdotnew/react";
