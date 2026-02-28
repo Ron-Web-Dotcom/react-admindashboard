@@ -28,16 +28,18 @@ import { ResponsivePie } from "@nivo/pie";
 const HeatmapMock = () => {
   const cells = Array.from({ length: 28 }, (_, i) => Math.random() > 0.3);
   return (
-    <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap="4px">
+    <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap="6px">
       {cells.map((active, i) => (
         <Box
           key={i}
           sx={{
-            width: "12px",
-            height: "12px",
-            borderRadius: "3px",
+            width: "14px",
+            height: "14px",
+            borderRadius: "4px",
             background: active ? "hsl(var(--primary))" : "hsla(var(--primary) / 0.1)",
-            opacity: active ? (0.4 + Math.random() * 0.6) : 1
+            boxShadow: active ? "0 0 10px hsla(var(--primary) / 0.3)" : "none",
+            transition: "var(--transition-smooth)",
+            "&:hover": { transform: "scale(1.2)", zIndex: 1 }
           }}
         />
       ))}
@@ -57,14 +59,14 @@ const Dashboard = () => {
     <Box p="32px" sx={{ overflow: "hidden" }}>
       {/* HEADER GREETING */}
       <Box mb="40px">
-        <Typography variant="h1" sx={{ color: colors.grey[100], mb: "12px", fontSize: "56px", letterSpacing: "-2px" }}>
+        <Typography variant="h1" sx={{ color: theme.palette.text.primary, mb: "12px", fontSize: "56px", letterSpacing: "-2px", fontWeight: 700 }}>
           Good Morning, {user?.displayName?.split(' ')[0] || "Alex"}.
         </Typography>
         <Box display="flex" alignItems="center" gap="12px">
-          <Typography variant="h2" color={colors.grey[100]} sx={{ fontWeight: 500 }}>
+          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.8 }}>
             You're <span style={{ color: "hsl(var(--primary))", fontWeight: 700 }}>15% ahead</span> of schedule today.
           </Typography>
-          <Typography variant="h2" color={colors.grey[100]} sx={{ fontWeight: 500 }}>
+          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.8 }}>
             Keep pushing! 👋
           </Typography>
         </Box>
@@ -172,7 +174,7 @@ const Dashboard = () => {
         </Box>
 
         {/* FOCUS TIME */}
-        <Box gridColumn="span 4" className="glass-card" p="24px">
+        <Box gridColumn="span 4" className="glass-card" p="24px" sx={{ position: "relative" }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
             <Box display="flex" alignItems="center" gap="10px">
               <Clock size={20} color="hsl(var(--primary))" />
@@ -180,17 +182,39 @@ const Dashboard = () => {
             </Box>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex" justifyContent="space-between" alignItems="flex-end">
             <Box>
               <Typography variant="body2" sx={{ opacity: 0.6 }}>Today's Focus:</Typography>
-              <Typography variant="h2" fontWeight="800">03h 45m</Typography>
+              <Typography variant="h1" sx={{ fontWeight: 800, fontSize: "48px", letterSpacing: "-1px" }}>03h 45m</Typography>
               <Box display="flex" alignItems="center" gap="4px" mt="12px" color="hsl(var(--primary))">
                 <ArrowUpRight size={16} />
-                <Typography variant="body2">Yesterday: 03h 10m</Typography>
+                <Typography variant="body2" fontWeight="bold">Yesterday: 03h 10m</Typography>
               </Box>
             </Box>
-            <Box sx={{ width: "120px", height: "60px" }}>
-              <LineChart isDashboard={true} />
+            
+            {/* Sparkline with "Predict Future Revenue" overlay from image */}
+            <Box sx={{ width: "140px", height: "100px", position: "relative" }}>
+               <Box 
+                sx={{ 
+                  position: "absolute", 
+                  top: 0, 
+                  right: 0, 
+                  background: "hsla(var(--primary) / 0.1)", 
+                  backdropFilter: "blur(4px)",
+                  border: "1px solid hsla(var(--primary) / 0.2)",
+                  borderRadius: "8px",
+                  p: "4px 8px",
+                  zIndex: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center"
+                }}
+               >
+                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>Predict</Typography>
+                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>Future</Typography>
+                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>Revenue</Typography>
+               </Box>
+               <LineChart isDashboard={true} />
             </Box>
           </Box>
         </Box>

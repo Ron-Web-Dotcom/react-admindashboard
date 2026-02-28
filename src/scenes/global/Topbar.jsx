@@ -57,33 +57,91 @@ const Topbar = ({ setIsSidebar }) => {
 
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center" p="20px 32px">
-      {/* SEARCH BAR */}
-      <Box display="flex" alignItems="center" gap="16px" flex={1}>
-        <IconButton onClick={() => setIsSidebar((prev) => !prev)} sx={{ color: colors.grey[100] }}>
+      {/* LEFT: Menu Toggle */}
+      <Box display="flex" alignItems="center">
+        <IconButton onClick={() => setIsSidebar((prev) => !prev)} sx={{ color: theme.palette.text.primary }}>
           <MenuIcon size={24} />
         </IconButton>
-        
+      </Box>
+
+      {/* CENTER: Search Bar */}
+      <Box display="flex" justifyContent="center" flex={1} px="24px">
         <Box
           className="glass-card"
           sx={{
             display: "flex",
             alignItems: "center",
-            width: "400px",
-            height: "48px",
-            padding: "0 20px",
-            borderRadius: "24px",
+            width: "100%",
+            maxWidth: "600px",
+            height: "56px",
+            padding: "0 24px",
+            borderRadius: "28px",
             boxShadow: "none",
-            border: "1px solid hsla(var(--glass-border))"
+            border: "1px solid hsla(var(--glass-border))",
+            bgcolor: "hsla(var(--glass-bg))"
           }}
         >
           <Search size={20} color={colors.grey[300]} />
           <InputBase 
-            sx={{ ml: 2, flex: 1, color: colors.grey[100], fontSize: "14px" }} 
+            sx={{ ml: 2, flex: 1, color: theme.palette.text.primary, fontSize: "16px" }} 
             placeholder="Search goals, tasks, or resources..." 
             value={searchTerm}
             onChange={handleSearch}
           />
         </Box>
+      </Box>
+
+      {/* RIGHT: Actions & Profile */}
+      <Box display="flex" alignItems="center" gap="16px">
+        <IconButton 
+          className="glass-card" 
+          onClick={colorMode.toggleColorMode}
+          sx={{ width: "48px", height: "48px", borderRadius: "14px", border: "1px solid hsla(var(--glass-border))" }}
+        >
+          {theme.palette.mode === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        </IconButton>
+
+        <IconButton 
+          className="glass-card" 
+          sx={{ 
+            width: "48px", 
+            height: "48px", 
+            borderRadius: "14px", 
+            background: "hsla(171 77% 31% / 0.08) !important",
+            border: "1px solid hsla(var(--glass-border))"
+          }}
+        >
+          <Badge variant="dot" overlap="circular" color="success">
+            <Bell size={20} color="hsl(var(--primary))" />
+          </Badge>
+        </IconButton>
+
+        <IconButton 
+          className="glass-card" 
+          sx={{ width: "48px", height: "48px", borderRadius: "14px", border: "1px solid hsla(var(--glass-border))" }}
+        >
+          <Settings size={20} />
+        </IconButton>
+
+        <Box display="flex" alignItems="center" gap="12px" ml="12px">
+          <Box textAlign="right">
+            <Typography variant="h6" fontWeight="bold" color={theme.palette.text.primary} sx={{ lineHeight: 1.2 }}>
+              {user?.displayName || "Alex Chen"}
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.6, color: theme.palette.text.primary }}>
+              Pro Member
+            </Typography>
+          </Box>
+          <Avatar 
+            src="/assets/user.png" 
+            sx={{ width: 48, height: 48, borderRadius: "14px", cursor: "pointer", border: "2px solid white", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} 
+            onClick={() => navigate("/form")}
+          />
+          <IconButton onClick={() => blink.auth.signOut()} sx={{ color: theme.palette.text.primary }}>
+            <LogOut size={20} />
+          </IconButton>
+        </Box>
+      </Box>
 
         <Popover
           open={Boolean(anchorEl) && searchResults.length > 0}
@@ -125,53 +183,6 @@ const Topbar = ({ setIsSidebar }) => {
             ))}
           </List>
         </Popover>
-      </Box>
-
-      {/* ACTION ICONS & USER PROFILE */}
-      <Box display="flex" alignItems="center" gap="12px">
-        <IconButton 
-          className="glass-card" 
-          onClick={colorMode.toggleColorMode}
-          sx={{ width: "44px", height: "44px", borderRadius: "12px" }}
-        >
-          {theme.palette.mode === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-        </IconButton>
-
-        <IconButton 
-          className="glass-card" 
-          sx={{ width: "44px", height: "44px", borderRadius: "12px", background: "hsla(171 77% 31% / 0.1) !important" }}
-        >
-          <Badge variant="dot" overlap="circular" color="success">
-            <Bell size={20} color="hsl(var(--primary))" />
-          </Badge>
-        </IconButton>
-
-        <IconButton 
-          className="glass-card" 
-          sx={{ width: "44px", height: "44px", borderRadius: "12px" }}
-        >
-          <Settings size={20} />
-        </IconButton>
-
-        <Box display="flex" alignItems="center" gap="12px" ml="8px">
-          <Box textAlign="right">
-            <Typography variant="h6" fontWeight="bold" color={colors.grey[100]} sx={{ lineHeight: 1.2 }}>
-              {user?.displayName || "Alex Chen"}
-            </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.6 }}>
-              Pro Member
-            </Typography>
-          </Box>
-          <Avatar 
-            src="/assets/user.png" 
-            sx={{ width: 44, height: 44, borderRadius: "12px", cursor: "pointer" }} 
-            onClick={() => navigate("/form")}
-          />
-          <IconButton onClick={() => blink.auth.signOut()}>
-            <LogOut size={20} />
-          </IconButton>
-        </Box>
-      </Box>
     </Box>
   );
 };

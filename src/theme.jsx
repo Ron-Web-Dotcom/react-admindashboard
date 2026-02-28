@@ -77,8 +77,8 @@ export const tokens = (mode) => ({
           100: "#042F2E",
           200: "#004d40",
           300: "#00695c",
-          400: "#FDFDFD", // Glass background
-          500: "#F2F2F2", // Page background
+          400: "#FFFFFF", // Glass background (pure white)
+          500: "#F7F6F0", // Page background (Creamy White from image)
           600: "#d1d1d1",
           700: "#b3b3b3",
           800: "#949494",
@@ -142,7 +142,12 @@ export const themeSettings = (mode) => {
             },
             background: {
               default: colors.primary[500],
+              paper: colors.primary[400],
             },
+            text: {
+              primary: colors.grey[100],
+              secondary: colors.grey[300],
+            }
           }
         : {
             // palette values for light mode
@@ -159,7 +164,12 @@ export const themeSettings = (mode) => {
             },
             background: {
               default: colors.primary[500],
+              paper: colors.primary[400],
             },
+            text: {
+              primary: colors.grey[100],
+              secondary: colors.grey[300],
+            }
           }),
     },
     typography: {

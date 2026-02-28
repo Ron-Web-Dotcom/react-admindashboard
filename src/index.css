@@ -17,6 +17,13 @@
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.dark {
+  --background: 222 47% 11%;
+  --glass-bg: 222 47% 11% / 0.6;
+  --glass-border: 255 255% 255% / 0.1;
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
 html,
 body,
 #root,
@@ -25,7 +32,7 @@ body,
   height: 100%;
   width: 100%;
   font-family: "Geist Sans", sans-serif;
-  background-color: hsl(var(--background));
+  background-color: transparent !important; /* Let MUI handle it */
   color: hsl(var(--foreground));
 }
 

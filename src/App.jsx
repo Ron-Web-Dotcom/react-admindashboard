@@ -84,7 +84,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Toaster />
-        <Box display="flex" position="relative" height="100vh" overflow="hidden">
+        <Box display="flex" position="relative" height="100vh" overflow="hidden" sx={{ bgcolor: theme.palette.background.default }}>
           <Sidebar isSidebar={isSidebar} />
           <Box
             component="main"

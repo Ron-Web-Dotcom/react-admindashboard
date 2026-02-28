@@ -75,28 +75,29 @@ const Sidebar = ({ isSidebar }) => {
       }}
     >
       {/* LOGO */}
-      <Box p="32px 24px" display="flex" alignItems="center" gap="12px">
+      <Box p="40px 32px" display="flex" alignItems="center" gap="16px">
         <Box 
           sx={{ 
-            width: "32px", 
-            height: "32px", 
-            borderRadius: "8px", 
+            width: "40px", 
+            height: "40px", 
+            borderRadius: "12px", 
             background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "white"
+            color: "white",
+            boxShadow: "0 8px 16px hsla(var(--primary) / 0.3)"
           }}
         >
-          <Typography variant="h4" fontWeight="bold">A</Typography>
+          <Target size={24} strokeWidth={3} />
         </Box>
-        <Typography variant="h2" fontWeight="bold" color="white" sx={{ letterSpacing: "-1px" }}>
+        <Typography variant="h1" fontWeight="800" color="white" sx={{ letterSpacing: "-2px", fontSize: "32px" }}>
           Ascend
         </Typography>
       </Box>
 
       {/* MENU ITEMS */}
-      <Box flexGrow={1} mt="20px">
+      <Box flexGrow={1} mt="10px">
         <NavItem
           title="Dashboard"
           to="/"
