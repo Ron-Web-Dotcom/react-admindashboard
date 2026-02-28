@@ -35,17 +35,21 @@ const Topbar = ({ setIsSidebar }) => {
     }
 
     try {
-      // Search across multiple tables
+      // Fetch data and filter in memory for simple search
       const [team, contacts, invoices] = await Promise.all([
-        blink.db.teams.list({ where: { name: { contains: value } }, limit: 3 }),
-        blink.db.contacts.list({ where: { name: { contains: value } }, limit: 3 }),
-        blink.db.invoices.list({ where: { name: { contains: value } }, limit: 3 })
+        blink.db.teams.list(),
+        blink.db.contacts.list(),
+        blink.db.invoices.list()
       ]);
 
+      const filteredTeam = team.filter(i => i.name.toLowerCase().includes(value.toLowerCase())).slice(0, 3);
+      const filteredContacts = contacts.filter(i => i.name.toLowerCase().includes(value.toLowerCase())).slice(0, 3);
+      const filteredInvoices = invoices.filter(i => i.name.toLowerCase().includes(value.toLowerCase())).slice(0, 3);
+
       const results = [
-        ...team.map(i => ({ ...i, type: 'Team', link: '/team' })),
-        ...contacts.map(i => ({ ...i, type: 'Contact', link: '/contacts' })),
-        ...invoices.map(i => ({ ...i, type: 'Invoice', link: '/invoices' }))
+        ...filteredTeam.map(i => ({ ...i, type: 'Team', link: '/team' })),
+        ...filteredContacts.map(i => ({ ...i, type: 'Contact', link: '/contacts' })),
+        ...filteredInvoices.map(i => ({ ...i, type: 'Invoice', link: '/invoices' }))
       ];
 
       setSearchResults(results);

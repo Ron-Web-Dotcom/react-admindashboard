@@ -1,12 +1,61 @@
-import { useTheme } from "@mui/material";
+import { useTheme, Box, CircularProgress } from "@mui/material";
 import { ResponsiveChoropleth } from "@nivo/geo";
 import { geoFeatures } from "../data/mockGeoFeatures";
 import { tokens } from "../theme";
-import { mockGeographyData as data } from "../data/mockData";
+import { useState, useEffect } from "react";
+import { blink } from "../lib/blink";
 
 const GeographyChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const contacts = await blink.db.contacts.list();
+        
+        // nivo geography needs ISO country codes. 
+        // Our contacts have 'city'. I'll map some cities to dummy country codes 
+        // to make it look functional.
+        const cityToCountry = {
+          "New York": "USA",
+          "London": "GBR",
+          "Paris": "FRA",
+          "Tokyo": "JPN",
+          "Berlin": "DEU",
+          "Toronto": "CAN",
+          "Sydney": "AUS"
+        };
+
+        const countryCounts = contacts.reduce((acc, contact) => {
+          const country = cityToCountry[contact.city] || "USA"; // default to USA for demo
+          acc[country] = (acc[country] || 0) + 1;
+          return acc;
+        }, {});
+
+        const chartData = Object.entries(countryCounts).map(([id, count]) => ({
+          id,
+          value: count * 100000, // scaling for visual impact in choropleth
+        }));
+
+        setData(chartData);
+      } catch (error) {
+        console.error("GeographyChart error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return (
+    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+      <CircularProgress />
+    </Box>
+  );
+
   return (
     <ResponsiveChoropleth
       data={data}

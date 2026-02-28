@@ -1,11 +1,50 @@
-import { useTheme } from "@mui/material";
+import { useTheme, Box, CircularProgress } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
-import { mockBarData as data } from "../data/mockData";
+import { useState, useEffect } from "react";
+import { blink } from "../lib/blink";
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const transactions = await blink.db.transactions.list();
+        
+        // Group transactions by user
+        const userSpendMap = transactions.reduce((acc, tx) => {
+          const user = tx.userName || "Unknown";
+          acc[user] = (acc[user] || 0) + (tx.cost || 0);
+          return acc;
+        }, {});
+
+        const chartData = Object.entries(userSpendMap)
+          .map(([userName, total]) => ({
+            userName,
+            total,
+          }))
+          .sort((a, b) => b.total - a.total)
+          .slice(0, 5); // top 5 users
+
+        setData(chartData);
+      } catch (error) {
+        console.error("BarChart error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return (
+    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+      <CircularProgress />
+    </Box>
+  );
 
   return (
     <ResponsiveBar
@@ -39,8 +78,8 @@ const BarChart = ({ isDashboard = false }) => {
           },
         },
       }}
-      keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
-      indexBy="country"
+      keys={["total"]}
+      indexBy="userName"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}
@@ -76,7 +115,7 @@ const BarChart = ({ isDashboard = false }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "country", // changed
+        legend: isDashboard ? undefined : "User", // changed
         legendPosition: "middle",
         legendOffset: 32,
       }}
@@ -84,7 +123,7 @@ const BarChart = ({ isDashboard = false }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "food", // changed
+        legend: isDashboard ? undefined : "Spend", // changed
         legendPosition: "middle",
         legendOffset: -40,
       }}

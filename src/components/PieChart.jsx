@@ -1,11 +1,47 @@
 import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
-import { useTheme } from "@mui/material";
-import { mockPieData as data } from "../data/mockData";
+import { useTheme, Box, CircularProgress } from "@mui/material";
+import { useState, useEffect } from "react";
+import { blink } from "../lib/blink";
 
 const PieChart = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const teams = await blink.db.teams.list();
+        const roleCounts = teams.reduce((acc, team) => {
+          acc[team.access] = (acc[team.access] || 0) + 1;
+          return acc;
+        }, {});
+
+        const chartData = Object.entries(roleCounts).map(([role, count]) => ({
+          id: role,
+          label: role.charAt(0).toUpperCase() + role.slice(1),
+          value: count,
+          color: `hsl(${Math.random() * 360}, 70%, 50%)`,
+        }));
+
+        setData(chartData);
+      } catch (error) {
+        console.error("PieChart error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return (
+    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+      <CircularProgress />
+    </Box>
+  );
+
   return (
     <ResponsivePie
       data={data}
