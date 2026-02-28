@@ -84,30 +84,20 @@ const BarChart = ({ isDashboard = false }) => {
       padding={0.3}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
-      colors={{ scheme: "nivo" }}
-      defs={[
-        {
-          id: "dots",
-          type: "patternDots",
-          background: "inherit",
-          color: "#38bcb2",
-          size: 4,
-          padding: 1,
-          stagger: true,
+      colors={{ scheme: "greens" }}
+      theme={{
+        axis: {
+          domain: { line: { stroke: "transparent" } },
+          legend: { text: { fill: colors.grey[300] } },
+          ticks: {
+            line: { stroke: "transparent" },
+            text: { fill: colors.grey[300] },
+          },
         },
-        {
-          id: "lines",
-          type: "patternLines",
-          background: "inherit",
-          color: "#eed312",
-          rotation: -45,
-          lineWidth: 6,
-          spacing: 10,
+        grid: {
+          line: { stroke: "hsla(var(--primary) / 0.05)", strokeWidth: 1 }
         },
-      ]}
-      borderColor={{
-        from: "color",
-        modifiers: [["darker", "1.6"]],
+        legends: { text: { fill: colors.grey[300] } },
       }}
       axisTop={null}
       axisRight={null}
