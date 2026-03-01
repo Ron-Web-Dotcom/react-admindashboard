@@ -52,47 +52,47 @@ const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { user } = useBlinkAuth();
-  const { team, invoices, transactions, loading } = useDashboardData();
+  const { organization, transactions, team, leads, deals, loading } = useDashboardData();
 
-  if (loading) {
-    return (
-      <Box p="32px">
-        <Skeleton variant="text" width="400px" height={80} />
-        <Skeleton variant="text" width="300px" height={40} sx={{ mb: 4 }} />
-        <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap="24px">
-          <Skeleton variant="rectangular" gridColumn="span 4" height={200} sx={{ borderRadius: "2rem" }} />
-          <Skeleton variant="rectangular" gridColumn="span 4" height={200} sx={{ borderRadius: "2rem" }} />
-          <Skeleton variant="rectangular" gridColumn="span 4" height={200} sx={{ borderRadius: "2rem" }} />
-        </Box>
+  if (loading) return (
+    <Box p="40px" display="flex" flexDirection="column" gap="20px">
+      <Skeleton variant="text" width="300px" height="60px" />
+      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
+        <Skeleton variant="rectangular" height="200px" sx={{ borderRadius: "2rem" }} />
+        <Skeleton variant="rectangular" height="200px" sx={{ borderRadius: "2rem" }} />
+        <Skeleton variant="rectangular" height="200px" sx={{ borderRadius: "2rem" }} />
       </Box>
-    );
-  }
-
-  const revenue = invoices.reduce((acc, curr) => acc + parseFloat(curr.cost || 0), 0);
+    </Box>
+  );
 
   return (
-    <Box p="32px" sx={{ overflowY: "auto", height: "100%" }}>
+    <Box p="32px" sx={{ overflow: "hidden" }}>
       {/* HEADER GREETING */}
-      <Box mb="40px">
-        <Typography 
-          variant="h1" 
+      <Box mb="40px" display="flex" justifyContent="space-between" alignItems="flex-start">
+        <Box>
+          <Typography variant="h1" sx={{ color: theme.palette.text.primary, mb: "12px", fontSize: "56px", letterSpacing: "-2px", fontWeight: 700 }}>
+            Good Morning, {user?.displayName?.split(' ')[0] || "Alex"}.
+          </Typography>
+          <Box display="flex" alignItems="center" gap="12px">
+            <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.8 }}>
+              {organization?.name || "Your Workspace"} is <span style={{ color: "hsl(var(--primary))", fontWeight: 700 }}>thriving</span> today.
+            </Typography>
+          </Box>
+        </Box>
+        <Box 
           sx={{ 
-            color: theme.palette.text.primary, 
-            mb: "12px", 
-            fontSize: "56px", 
-            letterSpacing: "-2.5px", 
-            fontWeight: 800,
-            lineHeight: 1
+            p: "12px 24px", 
+            borderRadius: "16px", 
+            bgcolor: "hsla(var(--primary) / 0.1)",
+            border: "1px solid hsla(var(--primary) / 0.2)",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px"
           }}
         >
-          Good Morning, {user?.displayName?.split(' ')[0] || "Alex"}.
-        </Typography>
-        <Box display="flex" alignItems="center" gap="12px">
-          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.7 }}>
-            You're <span style={{ color: "hsl(var(--primary))", fontWeight: 700 }}>15% ahead</span> of schedule today.
-          </Typography>
-          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.7 }}>
-            Keep pushing! 👋
+          <Box sx={{ width: "8px", height: "8px", borderRadius: "50%", bgcolor: "hsl(var(--primary))" }} />
+          <Typography variant="h6" fontWeight="bold" color="hsl(var(--primary))">
+            {organization?.subscriptionTier || "Pro"} Plan
           </Typography>
         </Box>
       </Box>
@@ -101,114 +101,125 @@ const Dashboard = () => {
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
-        gridAutoRows="minmax(200px, auto)"
+        gridAutoRows="minmax(180px, auto)"
         gap="24px"
       >
         {/* ROW 1: GOAL, STREAK, FOCUS */}
         
-        {/* MAIN GOAL FOCUS */}
-        <Box gridColumn="span 4" className="glass-card" p="28px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
-            <Box display="flex" alignItems="center" gap="12px">
-              <Box p="8px" sx={{ bgcolor: "hsla(var(--primary) / 0.1)", borderRadius: "10px" }}>
-                <Target size={20} color="hsl(var(--primary))" />
-              </Box>
-              <Typography variant="h5" fontWeight="bold">Main Goal Focus</Typography>
+        {/* MAIN PIPELINE VALUE */}
+        <Box gridColumn="span 4" className="glass-card" p="24px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
+            <Box display="flex" alignItems="center" gap="10px">
+              <Target size={20} color="hsl(var(--primary))" />
+              <Typography variant="h5" fontWeight="bold">Pipeline Value</Typography>
             </Box>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
-          <Box display="flex" alignItems="center" gap="28px">
-            <ProgressCircle progress={0.82} size={110} />
+          <Box display="flex" alignItems="center" gap="24px">
+            <Box sx={{ width: "100px", height: "100px", position: "relative" }}>
+              <Box 
+                className="three-d-ring"
+                sx={{ 
+                  width: "100%", 
+                  height: "100%", 
+                  borderRadius: "50%", 
+                  background: `conic-gradient(hsl(var(--primary)) 75%, transparent 0)`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  "&::after": {
+                    content: '""',
+                    width: "75%",
+                    height: "85%",
+                    borderRadius: "50%",
+                    background: "hsl(var(--background))",
+                    position: "absolute",
+                    boxShadow: "inset 0 4px 10px rgba(0,0,0,0.05)"
+                  }
+                }} 
+              />
+              <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 1 }}>
+                <Typography variant="h5" fontWeight="bold">75%</Typography>
+              </Box>
+            </Box>
             <Box>
-              <Typography variant="h6" sx={{ opacity: 0.6, mb: "4px" }}>Q1 CRM Launch:</Typography>
-              <Typography variant="h2" fontWeight="800" color="hsl(var(--primary))" sx={{ letterSpacing: "-1px" }}>82% Done</Typography>
-              <Box display="flex" alignItems="center" gap="6px" mt="12px">
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Target: Mar 31</Typography>
+              <Typography variant="h5" fontWeight="bold">Total Active Deals:</Typography>
+              <Typography variant="h2" fontWeight="bold" color="hsl(var(--primary))">
+                ${deals.reduce((acc, d) => acc + (d.amount || 0), 0).toLocaleString()}
+              </Typography>
+              <Box display="flex" alignItems="center" gap="4px" mt="8px">
+                <Typography variant="body2" sx={{ opacity: 0.6 }}>{deals.length} Active Opportunities</Typography>
                 <ArrowUpRight size={14} color="hsl(var(--primary))" />
               </Box>
             </Box>
           </Box>
         </Box>
 
-        {/* CURRENT STREAK */}
-        <Box gridColumn="span 4" className="glass-card" p="28px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
-            <Box display="flex" alignItems="center" gap="12px">
-              <Box p="8px" sx={{ bgcolor: "rgba(249, 115, 22, 0.1)", borderRadius: "10px" }}>
-                <Flame size={20} color="#f97316" />
-              </Box>
-              <Typography variant="h5" fontWeight="bold">Current Streak</Typography>
+        {/* LEAD CONVERSION */}
+        <Box gridColumn="span 4" className="glass-card" p="24px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
+            <Box display="flex" alignItems="center" gap="10px">
+              <Flame size={20} color="#f97316" />
+              <Typography variant="h5" fontWeight="bold">Lead Velocity</Typography>
             </Box>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box display="flex" alignItems="center" gap="16px">
+            <Box display="flex" alignItems="center" gap="12px">
               <Box sx={{ position: "relative" }}>
-                <Flame size={64} color="#f97316" fill="#f97316" style={{ opacity: 0.15 }} />
-                <Typography 
-                  variant="h1" 
-                  sx={{ 
-                    position: "absolute", 
-                    top: "50%", 
-                    left: "50%", 
-                    transform: "translate(-50%, -45%)",
-                    fontWeight: 900,
-                    fontSize: "42px",
-                    color: "#f97316"
-                  }}
-                >
-                  24
+                <Flame size={48} color="#f97316" fill="#f97316" style={{ opacity: 0.2 }} />
+                <Typography variant="h1" sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontWeight: 800 }}>
+                  {leads.length}
                 </Typography>
               </Box>
-              <Typography variant="h4" fontWeight="bold" sx={{ color: "#f97316" }}>Days</Typography>
+              <Typography variant="h5" fontWeight="bold" sx={{ mt: "10px" }}>New Leads</Typography>
             </Box>
             <Box textAlign="right">
-              <Typography variant="body2" fontWeight="700" mb="10px" sx={{ opacity: 0.8 }}>Activity Insights</Typography>
+              <Typography variant="body2" fontWeight="bold" mb="8px">Weekly Activity</Typography>
               <HeatmapMock />
             </Box>
           </Box>
         </Box>
 
-        {/* FOCUS TIME */}
-        <Box gridColumn="span 4" className="glass-card" p="28px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
-            <Box display="flex" alignItems="center" gap="12px">
-              <Box p="8px" sx={{ bgcolor: "hsla(var(--primary) / 0.1)", borderRadius: "10px" }}>
-                <Clock size={20} color="hsl(var(--primary))" />
-              </Box>
-              <Typography variant="h5" fontWeight="bold">Focus Time</Typography>
+        {/* TEAM PERFORMANCE */}
+        <Box gridColumn="span 4" className="glass-card" p="24px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
+            <Box display="flex" alignItems="center" gap="10px">
+              <Clock size={20} color="hsl(var(--primary))" />
+              <Typography variant="h5" fontWeight="bold">Active Sessions</Typography>
             </Box>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
           <Box display="flex" justifyContent="space-between" alignItems="flex-end">
             <Box>
-              <Typography variant="body2" sx={{ opacity: 0.6, mb: "4px" }}>Today's Performance:</Typography>
-              <Typography variant="h1" sx={{ fontWeight: 800, fontSize: "48px", letterSpacing: "-2px" }}>03h 45m</Typography>
-              <Box display="flex" alignItems="center" gap="6px" mt="16px" color="hsl(var(--primary))">
-                <ArrowUpRight size={18} />
-                <Typography variant="body2" fontWeight="700">Yesterday: 03h 10m</Typography>
+              <Typography variant="body2" sx={{ opacity: 0.6 }}>Daily Engagement:</Typography>
+              <Typography variant="h1" sx={{ fontWeight: 800, fontSize: "48px", letterSpacing: "-1px" }}>
+                {team.length} Active
+              </Typography>
+              <Box display="flex" alignItems="center" gap="4px" mt="12px" color="hsl(var(--primary))">
+                <ArrowUpRight size={16} />
+                <Typography variant="body2" fontWeight="bold">Team Peak: {team.length + 2}</Typography>
               </Box>
             </Box>
             <Box sx={{ width: "140px", height: "100px", position: "relative" }}>
                <Box 
                 sx={{ 
                   position: "absolute", 
-                  top: -10, 
-                  right: -10, 
+                  top: 0, 
+                  right: 0, 
                   background: "hsla(var(--primary) / 0.1)", 
-                  backdropFilter: "blur(12px)",
+                  backdropFilter: "blur(4px)",
                   border: "1px solid hsla(var(--primary) / 0.2)",
-                  borderRadius: "12px",
-                  p: "6px 10px",
+                  borderRadius: "8px",
+                  p: "4px 8px",
                   zIndex: 2,
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
+                  alignItems: "center"
                 }}
                >
-                 <Typography sx={{ fontSize: "10px", fontWeight: "900", color: "hsl(var(--primary))", textTransform: "uppercase" }}>Forecast</Typography>
-                 <Typography sx={{ fontSize: "12px", fontWeight: "bold", color: "hsl(var(--primary))" }}>+$4.2k</Typography>
+                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>AI</Typography>
+                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>Sync</Typography>
                </Box>
                <LineChart isDashboard={true} />
             </Box>

@@ -5,10 +5,13 @@ import { useBlinkAuth } from '@blinkdotnew/react';
 export function useDashboardData() {
   const { user, isAuthenticated } = useBlinkAuth();
   const [data, setData] = useState({
+    organization: null,
     team: [],
     contacts: [],
     invoices: [],
     transactions: [],
+    leads: [],
+    deals: [],
     loading: true,
     error: null
   });
@@ -81,18 +84,27 @@ export function useDashboardData() {
     try {
       await seedData();
       
-      const [team, contacts, invoices, transactions] = await Promise.all([
+      const userRec = await blink.db.users.get(user.id);
+      const organizationId = userRec?.organizationId;
+
+      const [org, team, contacts, invoices, transactions, leads, deals] = await Promise.all([
+        organizationId ? blink.db.organizations.get(organizationId) : null,
         blink.db.teams.list(),
         blink.db.contacts.list(),
         blink.db.invoices.list(),
-        blink.db.transactions.list()
+        blink.db.transactions.list(),
+        organizationId ? blink.db.leads.list({ where: { organizationId } }) : [],
+        organizationId ? blink.db.deals.list({ where: { organizationId } }) : []
       ]);
 
       setData({
+        organization: org,
         team,
         contacts,
         invoices,
         transactions,
+        leads,
+        deals,
         loading: false,
         error: null
       });

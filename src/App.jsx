@@ -27,8 +27,30 @@ function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
   const isMobile = useMediaQuery("(max-width:768px)");
-  const { isAuthenticated, isLoading } = useBlinkAuth();
+  const { isAuthenticated, isLoading, user } = useBlinkAuth();
   const colors = tokens(theme.palette.mode);
+
+  // Multi-tenant initialization logic
+  useEffect(() => {
+    const initTenant = async () => {
+      if (isAuthenticated && user?.id) {
+        // Check if user has an organization
+        const userRec = await blink.db.users.get(user.id);
+        if (!userRec?.organizationId) {
+          // Auto-create or join default org for demo
+          const defaultOrg = await blink.db.organizations.create({
+            name: `${user.displayName}'s Workspace`,
+            subscriptionTier: 'Pro',
+          });
+          await blink.db.users.update(user.id, { 
+            organizationId: defaultOrg.id,
+            roleId: 'admin' 
+          });
+        }
+      }
+    };
+    initTenant();
+  }, [isAuthenticated, user?.id]);
 
   useEffect(() => {
     if (isMobile) {
