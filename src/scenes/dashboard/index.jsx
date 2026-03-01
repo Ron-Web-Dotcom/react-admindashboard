@@ -20,12 +20,15 @@ import {
   RefreshCcw,
   MoreHorizontal,
   ArrowUpRight,
-  Target
+  Target,
+  Lock
 } from "lucide-react";
 import { useDashboardData } from "../../hooks/useDashboardData";
 import { useBlinkAuth } from "@blinkdotnew/react";
 import LineChart from "../../components/LineChart";
 import ProgressCircle from "../../components/ProgressCircle";
+import { useSaaS } from "../../hooks/useSaaS";
+import { useNavigate } from "react-router-dom";
 
 const HeatmapMock = () => {
   const cells = Array.from({ length: 28 }, (_, i) => Math.random() > 0.3);
@@ -54,6 +57,8 @@ const Dashboard = () => {
   const colors = tokens(theme.palette.mode);
   const { user } = useBlinkAuth();
   const { organization, transactions, team, leads, deals, loading } = useDashboardData();
+  const { canAccess, tier } = useSaaS();
+  const navigate = useNavigate();
 
   if (loading) return (
     <Box p="40px" display="flex" flexDirection="column" gap="20px">
@@ -247,7 +252,32 @@ const Dashboard = () => {
         </Box>
 
         {/* AI SALES COACH / NEXT ACTIONS */}
-        <Box gridColumn="span 8" className="glass-card" p="24px">
+        <Box gridColumn="span 8" className="glass-card" p="24px" sx={{ position: "relative", overflow: "hidden" }}>
+          {!canAccess('aiCoach') && (
+            <Box 
+              sx={{ 
+                position: "absolute", 
+                inset: 0, 
+                zIndex: 10, 
+                bgcolor: "rgba(255,255,255,0.6)", 
+                backdropFilter: "blur(8px)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 2,
+                p: 4,
+                textAlign: "center"
+              }}
+            >
+              <Lock size={32} color="hsl(var(--primary))" />
+              <Typography variant="h4" fontWeight="bold">Pro Sales Coach</Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8, maxWidth: "300px" }}>
+                Get proactive deal risks and action suggestions with our AI Sales Coach.
+              </Typography>
+              <Button size="small" onClick={() => navigate("/upgrade")} sx={{ color: "hsl(var(--primary))", fontWeight: "bold" }}>Upgrade to Pro</Button>
+            </Box>
+          )}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
             <Box display="flex" alignItems="center" gap="12px">
               <Sparkles size={20} color="hsl(var(--primary))" />

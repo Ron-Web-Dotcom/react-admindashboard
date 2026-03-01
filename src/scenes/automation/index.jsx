@@ -11,18 +11,47 @@ import {
   Mail,
   RefreshCw,
   MoreVertical,
-  Play
+  Play,
+  Lock
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { blink } from "../../lib/blink";
 import { toast } from "react-hot-toast";
+import { useSaaS } from "../../hooks/useSaaS";
+import { useNavigate } from "react-router-dom";
 
 const Automation = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { organization, loading } = useDashboardData();
+  const { canAccess } = useSaaS();
+  const navigate = useNavigate();
   const [workflows, setWorkflows] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  if (!canAccess('automation')) {
+    return (
+      <Box m="20px 32px" display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="70vh">
+        <Box sx={{ p: "40px", borderRadius: "32px", bgcolor: "white", textAlign: "center", maxWidth: "500px", boxShadow: "0 20px 60px rgba(0,0,0,0.05)" }}>
+          <Box sx={{ width: "80px", height: "80px", borderRadius: "50%", bgcolor: "hsla(var(--primary) / 0.1)", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 3 }}>
+            <Lock size={40} color="hsl(var(--primary))" />
+          </Box>
+          <Typography variant="h2" fontWeight="bold" mb={2}>Automation Hub</Typography>
+          <Typography variant="h5" sx={{ opacity: 0.6, mb: 4 }}>
+            Enterprise-grade workflows and business rules are only available on the Pro plan and above.
+          </Typography>
+          <Button 
+            variant="contained" 
+            size="large" 
+            onClick={() => navigate("/upgrade")}
+            sx={{ bgcolor: "hsl(var(--primary))", color: "white", borderRadius: "12px", px: 6, py: 1.5, fontSize: "16px", fontWeight: "bold" }}
+          >
+            Upgrade Now
+          </Button>
+        </Box>
+      </Box>
+    );
+  }
 
   const fetchWorkflows = async () => {
     if (!organization?.id) return;
