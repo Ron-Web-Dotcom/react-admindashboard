@@ -1,10 +1,10 @@
-import { Box, useTheme, CircularProgress } from "@mui/material";
+import { Box, useTheme, CircularProgress, Skeleton } from "@mui/material";
 import Header from "../../components/Header";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { ChevronDown, HelpCircle } from "lucide-react";
 import { tokens } from "../../theme";
 import { useState, useEffect } from "react";
 import { blink } from "../../lib/blink";
@@ -36,25 +36,43 @@ const FAQ = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
-        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      <Box m="20px">
+        <Skeleton variant="text" width="200px" height={60} />
+        <Skeleton variant="text" width="300px" height={30} sx={{ mb: 4 }} />
+        {[1, 2, 3, 4, 5].map(i => (
+          <Skeleton key={i} variant="rectangular" height={60} sx={{ mb: 2, borderRadius: "12px" }} />
+        ))}
       </Box>
     );
   }
 
   return (
     <Box m="20px">
-      <Header title="FAQ" subtitle="Frequently Asked Questions Page" />
+      <Header title="RESOURCES" subtitle="SaaS knowledge base & assistance" />
 
       {faqs.map((faq) => (
-        <Accordion key={faq.id} defaultExpanded sx={{ backgroundColor: colors.primary[400], mb: "10px" }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography color={colors.greenAccent[500]} variant="h5">
-              {faq.question}
-            </Typography>
+        <Accordion 
+          key={faq.id} 
+          sx={{ 
+            backgroundColor: "hsla(var(--glass-bg))",
+            backdropFilter: "blur(10px)",
+            mb: "16px",
+            borderRadius: "16px !important",
+            border: `1px solid hsla(var(--glass-border))`,
+            boxShadow: "var(--shadow-glass)",
+            "&:before": { display: "none" }
+          }}
+        >
+          <AccordionSummary expandIcon={<ChevronDown color="hsl(var(--primary))" />}>
+            <Box display="flex" alignItems="center" gap="12px">
+              <HelpCircle size={20} color="hsl(var(--primary))" />
+              <Typography color="hsl(var(--primary))" variant="h5" fontWeight="bold">
+                {faq.question}
+              </Typography>
+            </Box>
           </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
+          <AccordionDetails sx={{ pt: 0, pb: 3, px: 3 }}>
+            <Typography variant="h6" sx={{ opacity: 0.8, lineHeight: 1.6 }}>
               {faq.answer}
             </Typography>
           </AccordionDetails>

@@ -6,7 +6,8 @@ import {
   AvatarGroup, 
   Button, 
   IconButton,
-  Tooltip
+  Tooltip,
+  Skeleton
 } from "@mui/material";
 import { tokens } from "../../theme";
 import { 
@@ -23,7 +24,7 @@ import {
 import { useDashboardData } from "../../hooks/useDashboardData";
 import { useBlinkAuth } from "@blinkdotnew/react";
 import LineChart from "../../components/LineChart";
-import { ResponsivePie } from "@nivo/pie";
+import ProgressCircle from "../../components/ProgressCircle";
 
 const HeatmapMock = () => {
   const cells = Array.from({ length: 28 }, (_, i) => Math.random() > 0.3);
@@ -51,22 +52,46 @@ const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { user } = useBlinkAuth();
-  const { transactions, team, loading } = useDashboardData();
+  const { team, invoices, transactions, loading } = useDashboardData();
 
-  if (loading) return <Box p="40px">Loading Ascend...</Box>;
+  if (loading) {
+    return (
+      <Box p="32px">
+        <Skeleton variant="text" width="400px" height={80} />
+        <Skeleton variant="text" width="300px" height={40} sx={{ mb: 4 }} />
+        <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap="24px">
+          <Skeleton variant="rectangular" gridColumn="span 4" height={200} sx={{ borderRadius: "2rem" }} />
+          <Skeleton variant="rectangular" gridColumn="span 4" height={200} sx={{ borderRadius: "2rem" }} />
+          <Skeleton variant="rectangular" gridColumn="span 4" height={200} sx={{ borderRadius: "2rem" }} />
+        </Box>
+      </Box>
+    );
+  }
+
+  const revenue = invoices.reduce((acc, curr) => acc + parseFloat(curr.cost || 0), 0);
 
   return (
-    <Box p="32px" sx={{ overflow: "hidden" }}>
+    <Box p="32px" sx={{ overflowY: "auto", height: "100%" }}>
       {/* HEADER GREETING */}
       <Box mb="40px">
-        <Typography variant="h1" sx={{ color: theme.palette.text.primary, mb: "12px", fontSize: "56px", letterSpacing: "-2px", fontWeight: 700 }}>
+        <Typography 
+          variant="h1" 
+          sx={{ 
+            color: theme.palette.text.primary, 
+            mb: "12px", 
+            fontSize: "56px", 
+            letterSpacing: "-2.5px", 
+            fontWeight: 800,
+            lineHeight: 1
+          }}
+        >
           Good Morning, {user?.displayName?.split(' ')[0] || "Alex"}.
         </Typography>
         <Box display="flex" alignItems="center" gap="12px">
-          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.8 }}>
+          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.7 }}>
             You're <span style={{ color: "hsl(var(--primary))", fontWeight: 700 }}>15% ahead</span> of schedule today.
           </Typography>
-          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.8 }}>
+          <Typography variant="h2" sx={{ color: theme.palette.text.primary, fontWeight: 500, opacity: 0.7 }}>
             Keep pushing! 👋
           </Typography>
         </Box>
@@ -76,61 +101,29 @@ const Dashboard = () => {
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
-        gridAutoRows="minmax(180px, auto)"
+        gridAutoRows="minmax(200px, auto)"
         gap="24px"
       >
         {/* ROW 1: GOAL, STREAK, FOCUS */}
         
         {/* MAIN GOAL FOCUS */}
-        <Box gridColumn="span 4" className="glass-card" p="24px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
-            <Box display="flex" alignItems="center" gap="10px">
-              <Target size={20} color="hsl(var(--primary))" />
+        <Box gridColumn="span 4" className="glass-card" p="28px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
+            <Box display="flex" alignItems="center" gap="12px">
+              <Box p="8px" sx={{ bgcolor: "hsla(var(--primary) / 0.1)", borderRadius: "10px" }}>
+                <Target size={20} color="hsl(var(--primary))" />
+              </Box>
               <Typography variant="h5" fontWeight="bold">Main Goal Focus</Typography>
             </Box>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
-          <Box display="flex" alignItems="center" gap="24px">
-            <Box sx={{ width: "100px", height: "100px", position: "relative" }}>
-              {/* 3D-ish Progress Circle placeholder */}
-              <Box 
-                sx={{ 
-                  width: "100%", 
-                  height: "100%", 
-                  borderRadius: "50%", 
-                  background: `conic-gradient(hsl(var(--primary)) 82%, transparent 0)`,
-                  boxShadow: "inset 0 0 20px rgba(0,0,0,0.1), 0 0 20px hsla(var(--primary) / 0.3)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  "&::after": {
-                    content: '""',
-                    width: "75%",
-                    height: "85%", // offset for 3D look
-                    borderRadius: "50%",
-                    background: "hsl(var(--background))",
-                    position: "absolute",
-                    boxShadow: "inset 0 4px 10px rgba(0,0,0,0.05)"
-                  }
-                }} 
-              />
-              <Box 
-                sx={{ 
-                  position: "absolute", 
-                  top: "50%", 
-                  left: "50%", 
-                  transform: "translate(-50%, -50%)", 
-                  zIndex: 1 
-                }}
-              >
-                <Typography variant="h5" fontWeight="bold">82%</Typography>
-              </Box>
-            </Box>
+          <Box display="flex" alignItems="center" gap="28px">
+            <ProgressCircle progress={0.82} size={110} />
             <Box>
-              <Typography variant="h5" fontWeight="bold">Q1 Product Launch:</Typography>
-              <Typography variant="h3" fontWeight="bold" color="hsl(var(--primary))">82% Complete</Typography>
-              <Box display="flex" alignItems="center" gap="4px" mt="8px">
-                <Typography variant="body2" sx={{ opacity: 0.6 }}>Target: 100% by March 31</Typography>
+              <Typography variant="h6" sx={{ opacity: 0.6, mb: "4px" }}>Q1 CRM Launch:</Typography>
+              <Typography variant="h2" fontWeight="800" color="hsl(var(--primary))" sx={{ letterSpacing: "-1px" }}>82% Done</Typography>
+              <Box display="flex" alignItems="center" gap="6px" mt="12px">
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>Target: Mar 31</Typography>
                 <ArrowUpRight size={14} color="hsl(var(--primary))" />
               </Box>
             </Box>
@@ -138,276 +131,213 @@ const Dashboard = () => {
         </Box>
 
         {/* CURRENT STREAK */}
-        <Box gridColumn="span 4" className="glass-card" p="24px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
-            <Box display="flex" alignItems="center" gap="10px">
-              <Flame size={20} color="#f97316" />
+        <Box gridColumn="span 4" className="glass-card" p="28px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
+            <Box display="flex" alignItems="center" gap="12px">
+              <Box p="8px" sx={{ bgcolor: "rgba(249, 115, 22, 0.1)", borderRadius: "10px" }}>
+                <Flame size={20} color="#f97316" />
+              </Box>
               <Typography variant="h5" fontWeight="bold">Current Streak</Typography>
             </Box>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box display="flex" alignItems="center" gap="12px">
+            <Box display="flex" alignItems="center" gap="16px">
               <Box sx={{ position: "relative" }}>
-                <Flame size={48} color="#f97316" fill="#f97316" style={{ opacity: 0.2 }} />
+                <Flame size={64} color="#f97316" fill="#f97316" style={{ opacity: 0.15 }} />
                 <Typography 
                   variant="h1" 
                   sx={{ 
                     position: "absolute", 
                     top: "50%", 
                     left: "50%", 
-                    transform: "translate(-50%, -50%)",
-                    fontWeight: 800
+                    transform: "translate(-50%, -45%)",
+                    fontWeight: 900,
+                    fontSize: "42px",
+                    color: "#f97316"
                   }}
                 >
                   24
                 </Typography>
               </Box>
-              <Typography variant="h5" fontWeight="bold" sx={{ mt: "10px" }}>Day Streak</Typography>
+              <Typography variant="h4" fontWeight="bold" sx={{ color: "#f97316" }}>Days</Typography>
             </Box>
             <Box textAlign="right">
-              <Typography variant="body2" fontWeight="bold" mb="8px">Mini activity heat map</Typography>
+              <Typography variant="body2" fontWeight="700" mb="10px" sx={{ opacity: 0.8 }}>Activity Insights</Typography>
               <HeatmapMock />
-              <Typography variant="body2" sx={{ mt: "8px", opacity: 0.6 }}>Consistency is key!</Typography>
             </Box>
           </Box>
         </Box>
 
         {/* FOCUS TIME */}
-        <Box gridColumn="span 4" className="glass-card" p="24px" sx={{ position: "relative" }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
-            <Box display="flex" alignItems="center" gap="10px">
-              <Clock size={20} color="hsl(var(--primary))" />
+        <Box gridColumn="span 4" className="glass-card" p="28px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
+            <Box display="flex" alignItems="center" gap="12px">
+              <Box p="8px" sx={{ bgcolor: "hsla(var(--primary) / 0.1)", borderRadius: "10px" }}>
+                <Clock size={20} color="hsl(var(--primary))" />
+              </Box>
               <Typography variant="h5" fontWeight="bold">Focus Time</Typography>
             </Box>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
           <Box display="flex" justifyContent="space-between" alignItems="flex-end">
             <Box>
-              <Typography variant="body2" sx={{ opacity: 0.6 }}>Today's Focus:</Typography>
-              <Typography variant="h1" sx={{ fontWeight: 800, fontSize: "48px", letterSpacing: "-1px" }}>03h 45m</Typography>
-              <Box display="flex" alignItems="center" gap="4px" mt="12px" color="hsl(var(--primary))">
-                <ArrowUpRight size={16} />
-                <Typography variant="body2" fontWeight="bold">Yesterday: 03h 10m</Typography>
+              <Typography variant="body2" sx={{ opacity: 0.6, mb: "4px" }}>Today's Performance:</Typography>
+              <Typography variant="h1" sx={{ fontWeight: 800, fontSize: "48px", letterSpacing: "-2px" }}>03h 45m</Typography>
+              <Box display="flex" alignItems="center" gap="6px" mt="16px" color="hsl(var(--primary))">
+                <ArrowUpRight size={18} />
+                <Typography variant="body2" fontWeight="700">Yesterday: 03h 10m</Typography>
               </Box>
             </Box>
-            
-            {/* Sparkline with "Predict Future Revenue" overlay from image */}
             <Box sx={{ width: "140px", height: "100px", position: "relative" }}>
                <Box 
                 sx={{ 
                   position: "absolute", 
-                  top: 0, 
-                  right: 0, 
+                  top: -10, 
+                  right: -10, 
                   background: "hsla(var(--primary) / 0.1)", 
-                  backdropFilter: "blur(4px)",
+                  backdropFilter: "blur(12px)",
                   border: "1px solid hsla(var(--primary) / 0.2)",
-                  borderRadius: "8px",
-                  p: "4px 8px",
+                  borderRadius: "12px",
+                  p: "6px 10px",
                   zIndex: 2,
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center"
+                  alignItems: "center",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
                 }}
                >
-                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>Predict</Typography>
-                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>Future</Typography>
-                 <Typography sx={{ fontSize: "10px", fontWeight: "bold", color: "hsl(var(--primary))" }}>Revenue</Typography>
+                 <Typography sx={{ fontSize: "10px", fontWeight: "900", color: "hsl(var(--primary))", textTransform: "uppercase" }}>Forecast</Typography>
+                 <Typography sx={{ fontSize: "12px", fontWeight: "bold", color: "hsl(var(--primary))" }}>+$4.2k</Typography>
                </Box>
                <LineChart isDashboard={true} />
             </Box>
           </Box>
         </Box>
 
-        {/* ROW 2: TIMELINE & AI INSIGHTS */}
+        {/* ROW 2: PIPELINE VELOCITY & ACCOUNTABILITY */}
 
-        {/* TIMELINE */}
-        <Box gridColumn="span 8" className="glass-card" p="24px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
-            <Typography variant="h4" fontWeight="bold">Timeline</Typography>
-            <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
-          </Box>
-          <Box sx={{ position: "relative", minHeight: "140px" }}>
-            {/* Days row */}
-            <Box display="flex" justifyContent="space-between" mb="20px" sx={{ opacity: 0.4 }}>
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(day => (
-                <Typography key={day} variant="body2" fontWeight="bold">{day}</Typography>
-              ))}
+        {/* REVENUE PIPELINE */}
+        <Box gridColumn="span 8" className="glass-card" p="32px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="32px">
+            <Box>
+              <Typography variant="h3" fontWeight="bold" sx={{ letterSpacing: "-1px" }}>Revenue Pipeline</Typography>
+              <Typography variant="h6" sx={{ opacity: 0.6 }}>Real-time sales velocity tracking</Typography>
             </Box>
-            {/* Task segments mockup */}
-            <Box sx={{ position: "relative" }}>
-              <Box 
-                sx={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: "8px", 
-                  background: "hsla(var(--primary) / 0.1)", 
-                  p: "8px 16px", 
-                  borderRadius: "20px",
-                  width: "fit-content",
-                  border: "1px solid hsla(var(--primary) / 0.2)",
-                  mb: "12px"
-                }}
-              >
-                <Box 
-                  sx={{ 
-                    width: "16px", 
-                    height: "16px", 
-                    borderRadius: "50%", 
-                    background: "hsl(var(--primary))",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }} 
-                >
-                  <Box sx={{ width: "8px", height: "8px", borderRadius: "50%", background: "white" }} />
-                </Box>
-                <Typography variant="body2" fontWeight="bold">Q1 Product Task</Typography>
-                <Avatar src="/assets/user.png" sx={{ width: 24, height: 24 }} />
-              </Box>
-
-              <Box 
-                sx={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: "8px", 
-                  background: "hsla(var(--primary) / 0.1)", 
-                  p: "8px 16px", 
-                  borderRadius: "20px",
-                  width: "fit-content",
-                  border: "1px solid hsla(var(--primary) / 0.2)",
-                  ml: "120px",
-                  mb: "12px"
-                }}
-              >
-                <Box sx={{ color: "hsl(var(--primary))" }}>✓</Box>
-                <Typography variant="body2" fontWeight="bold">Completed items</Typography>
-                <Avatar sx={{ width: 24, height: 24, bgcolor: "hsl(var(--primary))", fontSize: "10px" }}>JD</Avatar>
-              </Box>
+            <Box display="flex" gap="12px">
+              <Button variant="outlined" sx={{ borderRadius: "12px", borderColor: "hsla(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>Weekly</Button>
+              <Button variant="contained" sx={{ borderRadius: "12px", bgcolor: "hsl(var(--primary))", "&:hover": { bgcolor: "hsl(var(--primary-glow))" } }}>Monthly</Button>
             </Box>
           </Box>
-        </Box>
-
-        {/* AI INSIGHTS */}
-        <Box gridColumn="span 4" className="glass-card" p="24px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
-            <Box display="flex" alignItems="center" gap="10px">
-              <Sparkles size={20} color="hsl(var(--primary))" />
-              <Typography variant="h5" fontWeight="bold">AI Insights</Typography>
-            </Box>
-            <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
-          </Box>
-          <Box>
-            <Box display="flex" alignItems="baseline" gap="8px">
-              <Typography variant="h1" fontWeight="bold">12%</Typography>
-              <Typography variant="h5" sx={{ opacity: 0.6 }}>Velocity Increase</Typography>
-            </Box>
-            <Box sx={{ height: "100px", mt: "10px" }}>
-              <LineChart isDashboard={true} />
-            </Box>
-            <Typography variant="body2" sx={{ mt: "16px", opacity: 0.7 }}>
-              Based on your recent activity, your productivity has surged this week.
-            </Typography>
-            <Button 
-              sx={{ 
-                mt: "16px", 
-                textTransform: "none", 
-                color: "hsl(var(--primary))",
-                p: 0,
-                "&:hover": { bgcolor: "transparent", opacity: 0.8 }
-              }}
-            >
-              View Detailed Report
-            </Button>
-          </Box>
-        </Box>
-
-        {/* ROW 3: ACHIEVEMENTS & ACCOUNTABILITY */}
-
-        {/* RECENT ACHIEVEMENTS */}
-        <Box gridColumn="span 8" className="glass-card" p="24px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
-            <Typography variant="h4" fontWeight="bold">Recent Achievements</Typography>
-            <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
-          </Box>
-          <Box display="flex" gap="24px">
-            {[
-              { title: "Early Bird", desc: "Completed 5 tasks before 9 AM", icon: Trophy, color: "#94a3b8" },
-              { title: "Goal Crusher", desc: "Exceeded weekly target by 20%", icon: Trophy, color: "#f59e0b" },
-              { title: "Team Player", desc: "Collaborated on 3 major projects", icon: Trophy, color: "#0d9488" }
-            ].map((achievement, i) => (
-              <Box 
-                key={i}
-                display="flex" 
-                alignItems="center" 
-                gap="16px" 
-                sx={{ 
-                  flex: 1, 
-                  p: "16px", 
-                  borderRadius: "16px", 
-                  bgcolor: "hsla(var(--primary) / 0.05)",
-                  border: "1px solid hsla(var(--primary) / 0.1)"
-                }}
-              >
-                <Box 
-                  sx={{ 
-                    width: "48px", 
-                    height: "48px", 
-                    borderRadius: "12px", 
-                    bgcolor: achievement.color, 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    color: "white"
-                  }}
-                >
-                  <achievement.icon size={24} />
-                </Box>
-                <Box>
-                  <Typography variant="h6" fontWeight="bold">{achievement.title}</Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.6 }}>{achievement.desc}</Typography>
-                </Box>
-              </Box>
-            ))}
+          <Box sx={{ height: "300px", width: "100%" }}>
+            <LineChart isDashboard={false} />
           </Box>
         </Box>
 
         {/* ACCOUNTABILITY CIRCLE */}
-        <Box gridColumn="span 4" className="glass-card" p="24px">
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
-            <Typography variant="h4" fontWeight="bold">Accountability Circle</Typography>
+        <Box gridColumn="span 4" className="glass-card" p="32px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="28px">
+            <Typography variant="h4" fontWeight="bold" sx={{ letterSpacing: "-0.5px" }}>Accountability</Typography>
             <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
           </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box display="flex" gap="12px">
-              {team.slice(0, 3).map((member, i) => (
-                <Box key={member.id} textAlign="center">
+          <Box display="flex" flexDirection="column" gap="24px">
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <AvatarGroup max={4}>
+                {team.map((member, i) => (
                   <Avatar 
+                    key={member.id}
                     src={i === 0 ? "/assets/user.png" : undefined}
-                    sx={{ width: 48, height: 48, mb: "8px", border: "2px solid hsl(var(--primary))" }}
+                    sx={{ width: 56, height: 56, border: "3px solid hsl(var(--background)) !important" }}
                   >
                     {member.name.charAt(0)}
                   </Avatar>
-                  <Typography variant="body2" fontWeight="bold">{member.name.split(' ')[0]}</Typography>
-                </Box>
-              ))}
+                ))}
+              </AvatarGroup>
+              <Box textAlign="right">
+                <Typography variant="h2" fontWeight="900" sx={{ letterSpacing: "-1px" }}>{team.length}</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.6, fontWeight: 600 }}>Active Agents</Typography>
+              </Box>
             </Box>
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: "white",
-                color: "black",
-                borderRadius: "16px",
-                p: "12px 20px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px",
-                "&:hover": { bgcolor: "#f0f0f0" }
-              }}
-            >
-              <RefreshCcw size={20} />
-              <Typography variant="body2" fontWeight="bold">Schedule Sync</Typography>
-            </Button>
+            
+            <Box sx={{ p: "20px", borderRadius: "20px", bgcolor: "hsla(var(--primary) / 0.05)", border: "1px solid hsla(var(--primary) / 0.1)" }}>
+              <Typography variant="h6" fontWeight="bold" mb="4px">Next Strategy Sync</Typography>
+              <Typography variant="body2" sx={{ opacity: 0.7, mb: "16px" }}>Today at 2:00 PM • Marketing Team</Typography>
+              <Button
+                fullWidth
+                variant="contained"
+                startIcon={<RefreshCcw size={18} />}
+                sx={{
+                  bgcolor: "white",
+                  color: "black",
+                  borderRadius: "12px",
+                  py: "10px",
+                  fontWeight: "bold",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                  "&:hover": { bgcolor: "#f8f8f8" }
+                }}
+              >
+                Join Huddle
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* ACHIEVEMENTS ROW */}
+        <Box gridColumn="span 12" className="glass-card" p="32px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="28px">
+            <Box display="flex" alignItems="center" gap="12px">
+              <Trophy size={24} color="#f59e0b" />
+              <Typography variant="h3" fontWeight="bold" sx={{ letterSpacing: "-1px" }}>Team Milestones</Typography>
+            </Box>
+            <Button sx={{ color: "hsl(var(--primary))", fontWeight: "bold" }}>View All</Button>
+          </Box>
+          <Box display="flex" gap="24px">
+            {[
+              { title: "Revenue Peak", desc: `$${revenue.toLocaleString()} reached this month`, icon: Trophy, color: "#f59e0b", badge: "Global" },
+              { title: "Retention Star", desc: "98% client satisfaction rate", icon: Sparkles, color: "hsl(var(--primary))", badge: "Team" },
+              { title: "Velocity Champ", desc: "Pipeline moving 20% faster", icon: ArrowUpRight, color: "#3b82f6", badge: "Personal" }
+            ].map((milestone, i) => (
+              <Box 
+                key={i}
+                display="flex" 
+                alignItems="center" 
+                gap="20px" 
+                sx={{ 
+                  flex: 1, 
+                  p: "24px", 
+                  borderRadius: "24px", 
+                  bgcolor: "hsla(var(--primary) / 0.03)",
+                  border: "1px solid hsla(var(--primary) / 0.08)",
+                  transition: "var(--transition-smooth)",
+                  "&:hover": { bgcolor: "hsla(var(--primary) / 0.06)", transform: "translateY(-4px)" }
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: "56px", 
+                    height: "56px", 
+                    borderRadius: "16px", 
+                    bgcolor: milestone.color, 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center",
+                    color: "white",
+                    boxShadow: `0 8px 16px ${milestone.color}33`
+                  }}
+                >
+                  <milestone.icon size={28} />
+                </Box>
+                <Box>
+                  <Box display="flex" alignItems="center" gap="8px" mb="4px">
+                    <Typography variant="h5" fontWeight="bold">{milestone.title}</Typography>
+                    <Box sx={{ px: "6px", py: "2px", bgcolor: "white", borderRadius: "6px", fontSize: "10px", fontWeight: 900, color: milestone.color, border: `1px solid ${milestone.color}33` }}>
+                      {milestone.badge}
+                    </Box>
+                  </Box>
+                  <Typography variant="body2" sx={{ opacity: 0.6, fontWeight: 500 }}>{milestone.desc}</Typography>
+                </Box>
+              </Box>
+            ))}
           </Box>
         </Box>
       </Box>

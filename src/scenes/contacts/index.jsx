@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -55,8 +55,10 @@ const Contacts = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
-        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      <Box m="20px">
+        <Skeleton variant="text" width="200px" height={60} />
+        <Skeleton variant="text" width="300px" height={30} sx={{ mb: 4 }} />
+        <Skeleton variant="rectangular" height="70vh" sx={{ borderRadius: "2rem" }} />
       </Box>
     );
   }
@@ -75,24 +77,27 @@ const Contacts = () => {
             border: "none",
           },
           "& .MuiDataGrid-cell": {
-            borderBottom: "none",
+            borderBottom: `1px solid hsla(var(--primary) / 0.05)`,
           },
           "& .name-column--cell": {
-            color: colors.greenAccent[300],
+            color: "hsl(var(--primary))",
+            fontWeight: "bold"
           },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: "hsla(var(--primary) / 0.05)",
             borderBottom: "none",
+            borderRadius: "1rem 1rem 0 0"
           },
           "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
+            backgroundColor: "transparent",
           },
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: "hsla(var(--primary) / 0.05)",
+            borderRadius: "0 0 1rem 1rem"
           },
           "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
+            color: `hsl(var(--primary)) !important`,
           },
           "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
             color: `${colors.grey[100]} !important`,

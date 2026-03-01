@@ -1,9 +1,7 @@
-import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
+import { Box, Typography, useTheme, CircularProgress, Skeleton } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
+import { ShieldCheck, LockOpen, ShieldAlert } from "lucide-react";
 import Header from "../../components/Header";
 import { useDashboardData } from "../../hooks/useDashboardData";
 
@@ -12,12 +10,17 @@ const Team = () => {
   const colors = tokens(theme.palette.mode);
   const { team, loading } = useDashboardData();
   const columns = [
-    { field: "id", headerName: "ID" },
+    { field: "id", headerName: "ID", width: 90 },
     {
       field: "name",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
+      renderCell: (params) => (
+        <Typography fontWeight="bold" color="hsl(var(--primary))">
+          {params.value}
+        </Typography>
+      )
     },
     {
       field: "age",
@@ -37,30 +40,31 @@ const Team = () => {
       flex: 1,
     },
     {
-      field: "accessLevel",
+      field: "access",
       headerName: "Access Level",
       flex: 1,
       renderCell: ({ row: { access } }) => {
         return (
           <Box
-            width="60%"
-            m="0 auto"
-            p="5px"
+            width="120px"
+            p="6px 12px"
             display="flex"
             justifyContent="center"
+            alignItems="center"
+            gap="8px"
             backgroundColor={
               access === "admin"
-                ? colors.greenAccent[600]
-                : access === "manager"
-                ? colors.greenAccent[700]
-                : colors.greenAccent[700]
+                ? "rgba(13, 148, 136, 0.1)"
+                : "rgba(59, 130, 246, 0.1)"
             }
-            borderRadius="4px"
+            border={`1px solid ${access === "admin" ? "rgba(13, 148, 136, 0.2)" : "rgba(59, 130, 246, 0.2)"}`}
+            borderRadius="10px"
+            sx={{ color: access === "admin" ? "hsl(var(--primary))" : "#3b82f6" }}
           >
-            {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {access === "manager" && <SecurityOutlinedIcon />}
-            {access === "user" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
+            {access === "admin" && <ShieldCheck size={16} />}
+            {access === "manager" && <ShieldAlert size={16} />}
+            {access === "user" && <LockOpen size={16} />}
+            <Typography variant="body2" fontWeight="bold" sx={{ textTransform: "capitalize" }}>
               {access}
             </Typography>
           </Box>
@@ -71,15 +75,17 @@ const Team = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
-        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      <Box m="20px">
+        <Skeleton variant="text" width="200px" height={60} />
+        <Skeleton variant="text" width="300px" height={30} sx={{ mb: 4 }} />
+        <Skeleton variant="rectangular" height="70vh" sx={{ borderRadius: "2rem" }} />
       </Box>
     );
   }
 
   return (
     <Box m="20px">
-      <Header title="TEAM" subtitle="Managing the Team Members" />
+      <Header title="TEAM" subtitle="Enterprise team permissions" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -88,24 +94,26 @@ const Team = () => {
             border: "none",
           },
           "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
+            borderBottom: `1px solid hsla(var(--primary) / 0.05)`,
           },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: "hsla(var(--primary) / 0.05)",
             borderBottom: "none",
+            borderRadius: "1rem 1rem 0 0"
           },
           "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
+            backgroundColor: "transparent",
           },
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: "hsla(var(--primary) / 0.05)",
+            borderRadius: "0 0 1rem 1rem"
           },
           "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
+            color: `hsl(var(--primary)) !important`,
+          },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
           },
         }}
       >

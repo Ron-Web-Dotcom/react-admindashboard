@@ -7,21 +7,23 @@
   --background: 45 29% 96%; /* Creamy White */
   --foreground: 222 47% 11%;
   
-  --glass-bg: 0 0% 100% / 0.6;
+  --glass-bg: 0 0% 100% / 0.7;
   --glass-border: 0 0% 100% / 0.5;
-  --glass-blur: blur(20px);
+  --glass-blur: blur(24px);
   
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.03);
-  --sidebar-glass: 222 47% 11% / 0.9;
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+  --shadow-3d: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+  --sidebar-glass: 222 47% 11% / 0.92;
   
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark {
   --background: 222 47% 11%;
-  --glass-bg: 222 47% 11% / 0.6;
-  --glass-border: 255 255% 255% / 0.1;
+  --glass-bg: 222 47% 11% / 0.7;
+  --glass-border: 255 255% 255% / 0.08;
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --shadow-3d: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
 }
 
 html,
@@ -32,7 +34,7 @@ body,
   height: 100%;
   width: 100%;
   font-family: "Geist Sans", sans-serif;
-  background-color: transparent !important; /* Let MUI handle it */
+  background-color: transparent !important;
   color: hsl(var(--foreground));
 }
 
@@ -42,40 +44,18 @@ body,
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid hsla(var(--glass-border));
   box-shadow: var(--shadow-glass);
-  border-radius: 1.5rem;
+  border-radius: 2rem;
   transition: var(--transition-smooth);
 }
 
-/* DataGrid Styling */
-.MuiDataGrid-root {
-  border: none !important;
-  background: hsla(var(--glass-bg)) !important;
-  backdrop-filter: var(--glass-blur);
-  border-radius: 1.5rem !important;
-  overflow: hidden;
-}
-
-.MuiDataGrid-cell {
-  border-bottom: 1px solid hsla(var(--primary) / 0.05) !important;
-}
-
-.MuiDataGrid-columnHeaders {
-  background-color: hsla(var(--primary) / 0.05) !important;
-  border-bottom: none !important;
-}
-
-.MuiDataGrid-footerContainer {
-  background-color: hsla(var(--primary) / 0.05) !important;
-  border-top: none !important;
-}
-
-.MuiDataGrid-virtualScroller {
-  background-color: transparent !important;
-}
-
 .glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-3d);
+}
+
+.three-d-ring {
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 0 10px 20px hsla(var(--primary) / 0.2);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
 }
 
 .sidebar-glass {

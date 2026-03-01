@@ -1,5 +1,5 @@
-import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { Box, Typography, useTheme, Skeleton } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useDashboardData } from "../../hooks/useDashboardData";
@@ -8,6 +8,7 @@ const Invoices = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { invoices, loading } = useDashboardData();
+
   const columns = [
     { field: "id", headerName: "ID" },
     {
@@ -31,7 +32,7 @@ const Invoices = () => {
       headerName: "Cost",
       flex: 1,
       renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
+        <Typography color="hsl(var(--primary))" fontWeight="bold">
           ${params.row.cost}
         </Typography>
       ),
@@ -45,8 +46,10 @@ const Invoices = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="75vh">
-        <CircularProgress sx={{ color: colors.greenAccent[500] }} />
+      <Box m="20px">
+        <Skeleton variant="text" width="200px" height={60} />
+        <Skeleton variant="text" width="300px" height={30} sx={{ mb: 4 }} />
+        <Skeleton variant="rectangular" height="70vh" sx={{ borderRadius: "2rem" }} />
       </Box>
     );
   }
@@ -62,33 +65,31 @@ const Invoices = () => {
             border: "none",
           },
           "& .MuiDataGrid-cell": {
-            borderBottom: "none",
+            borderBottom: `1px solid hsla(var(--primary) / 0.05)`,
           },
           "& .name-column--cell": {
-            color: colors.greenAccent[300],
+            color: "hsl(var(--primary))",
+            fontWeight: "bold"
           },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: "hsla(var(--primary) / 0.05)",
             borderBottom: "none",
+            borderRadius: "1rem 1rem 0 0"
           },
           "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
+            backgroundColor: "transparent",
           },
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
+            backgroundColor: "hsla(var(--primary) / 0.05)",
+            borderRadius: "0 0 1rem 1rem"
           },
           "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
+            color: `hsl(var(--primary)) !important`,
           },
         }}
       >
-        <DataGrid 
-          checkboxSelection 
-          rows={invoices} 
-          columns={columns} 
-          components={{ Toolbar: GridToolbar }}
-        />
+        <DataGrid checkboxSelection rows={invoices} columns={columns} />
       </Box>
     </Box>
   );
