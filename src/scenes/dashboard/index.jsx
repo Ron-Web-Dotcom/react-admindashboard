@@ -7,7 +7,8 @@ import {
   Button, 
   IconButton,
   Tooltip,
-  Skeleton
+  Skeleton,
+  Chip
 } from "@mui/material";
 import { tokens } from "../../theme";
 import { 
@@ -242,6 +243,66 @@ const Dashboard = () => {
           </Box>
           <Box sx={{ height: "300px", width: "100%" }}>
             <LineChart isDashboard={false} />
+          </Box>
+        </Box>
+
+        {/* AI SALES COACH / NEXT ACTIONS */}
+        <Box gridColumn="span 8" className="glass-card" p="24px">
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
+            <Box display="flex" alignItems="center" gap="12px">
+              <Sparkles size={20} color="hsl(var(--primary))" />
+              <Typography variant="h4" fontWeight="bold">AI Sales Coach: Next Actions</Typography>
+            </Box>
+            <IconButton size="small"><MoreHorizontal size={18} /></IconButton>
+          </Box>
+          <Box display="flex" flexDirection="column" gap="16px">
+            {[
+              { type: 'Follow-up', target: 'Robert Baratheon', reason: 'Lead score 85, inactive for 3 days', priority: 'High' },
+              { type: 'Risk Alert', target: 'Gold Mine Deal', reason: 'High amount ($850k) but Lead Score is 0', priority: 'Critical' },
+              { type: 'Opportunity', target: 'Ned Stark', reason: 'Proposal sent, engagement peak detected', priority: 'Medium' }
+            ].map((action, i) => (
+              <Box 
+                key={i}
+                display="flex" 
+                alignItems="center" 
+                justifyContent="space-between"
+                sx={{ 
+                  p: "16px 24px", 
+                  borderRadius: "16px", 
+                  bgcolor: action.priority === 'Critical' ? "hsla(0 100% 50% / 0.05)" : "hsla(var(--primary) / 0.03)",
+                  border: "1px solid hsla(var(--primary) / 0.1)"
+                }}
+              >
+                <Box display="flex" alignItems="center" gap="20px">
+                  <Chip 
+                    label={action.type} 
+                    size="small" 
+                    sx={{ 
+                      bgcolor: action.priority === 'Critical' ? "#ef4444" : "hsl(var(--primary))", 
+                      color: "white", 
+                      fontWeight: "bold",
+                      borderRadius: "8px"
+                    }} 
+                  />
+                  <Box>
+                    <Typography variant="h6" fontWeight="bold">{action.target}</Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.6 }}>{action.reason}</Typography>
+                  </Box>
+                </Box>
+                <Button 
+                  variant="outlined" 
+                  size="small"
+                  sx={{ 
+                    borderRadius: "10px", 
+                    textTransform: "none",
+                    borderColor: "hsla(var(--primary) / 0.3)",
+                    color: "hsl(var(--primary))"
+                  }}
+                >
+                  Take Action
+                </Button>
+              </Box>
+            ))}
           </Box>
         </Box>
 

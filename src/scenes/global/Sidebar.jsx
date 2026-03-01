@@ -12,6 +12,7 @@ import {
   ChevronRight,
   UserPlus,
   Briefcase,
+  Zap,
   Settings as SettingsIcon,
   Menu,
   X
@@ -119,6 +120,13 @@ const Sidebar = ({ isSidebar }) => {
           title="Pipeline"
           to="/kanban"
           icon={Briefcase}
+          selected={selected}
+          setSelected={setSelected}
+        />
+        <NavItem
+          title="Workflows"
+          to="/automation"
+          icon={Zap}
           selected={selected}
           setSelected={setSelected}
         />

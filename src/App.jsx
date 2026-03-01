@@ -15,6 +15,7 @@ import Geography from "./scenes/geography";
 import Upgrade from "./scenes/upgrade";
 import Leads from "./scenes/leads";
 import Pipeline from "./scenes/pipeline";
+import Automation from "./scenes/automation";
 import { CssBaseline, ThemeProvider, Box, Typography, Button, useMediaQuery, Skeleton } from "@mui/material";
 import { ColorModeContext, useMode, tokens } from "./theme";
 import Calendar from "./scenes/calendar/calendar";
@@ -141,6 +142,7 @@ function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/leads" element={<Leads />} />
                 <Route path="/kanban" element={<Pipeline />} />
+                <Route path="/automation" element={<Automation />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/invoices" element={<Invoices />} />
