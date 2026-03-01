@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme, Button, IconButton, Chip, Skeleton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import { Box, Typography, useTheme, Button, IconButton, Chip, Skeleton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import { blink } from "../../lib/blink";
 import { toast } from "react-hot-toast";
+import CopyIcon from '@mui/icons-material/ContentCopy';
 
 const Leads = () => {
   const theme = useTheme();
@@ -25,6 +26,11 @@ const Leads = () => {
   const [isScoring, setIsScoring] = useState({});
   const [openAdd, setOpenAdd] = useState(false);
   const [newLead, setNewLead] = useState({ name: "", email: "", company: "", phone: "", source: "Website" });
+  
+  const [openEmail, setOpenEmail] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [aiEmail, setAiEmail] = useState("");
+  const [isEmailGenerating, setIsEmailGenerating] = useState(false);
 
   const handleScoreLead = async (leadId) => {
     setIsScoring(prev => ({ ...prev, [leadId]: true }));
@@ -72,6 +78,29 @@ const Leads = () => {
       refresh();
     } catch (error) {
       toast.error("Failed to add lead");
+    }
+  };
+
+  const handleGenerateEmail = async (lead) => {
+    setSelectedLead(lead);
+    setOpenEmail(true);
+    setAiEmail("");
+    setIsEmailGenerating(true);
+    try {
+      const { text } = await blink.ai.generateText({
+        prompt: `Write a highly personalized, professional follow-up email for a CRM lead. 
+        Lead Name: ${lead.name}
+        Company: ${lead.company}
+        AI Score: ${lead.score}/100
+        Status: ${lead.status}
+        Goal: Persuade them to book a demo for Ascend CRM. 
+        Include a subject line.`
+      });
+      setAiEmail(text);
+    } catch (error) {
+      toast.error("AI Email generation failed");
+    } finally {
+      setIsEmailGenerating(false);
     }
   };
 
@@ -148,10 +177,14 @@ const Leads = () => {
     {
       field: "actions",
       headerName: "Actions",
-      width: 100,
-      renderCell: () => (
+      width: 150,
+      renderCell: ({ row }) => (
         <Box display="flex" gap="8px">
-          <IconButton size="small"><Mail size={18} /></IconButton>
+          <Tooltip title="AI Follow-up">
+            <IconButton size="small" onClick={() => handleGenerateEmail(row)} sx={{ color: "hsl(var(--primary))" }}>
+              <Mail size={18} />
+            </IconButton>
+          </Tooltip>
           <IconButton size="small"><MoreVertical size={18} /></IconButton>
         </Box>
       )
@@ -234,6 +267,47 @@ const Leads = () => {
           <Button onClick={() => setOpenAdd(false)} sx={{ color: colors.grey[300] }}>Cancel</Button>
           <Button onClick={handleAddLead} variant="contained" sx={{ bgcolor: "hsl(var(--primary))", color: "white", borderRadius: "12px", px: 4 }}>
             Create Lead
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* AI Email Dialog */}
+      <Dialog open={openEmail} onClose={() => setOpenEmail(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "24px", p: 2, bgcolor: "hsl(var(--background))" } }}>
+        <DialogTitle sx={{ fontWeight: "bold", fontSize: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+          <Sparkles size={24} color="hsl(var(--primary))" />
+          AI follow-up for {selectedLead?.name}
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          {isEmailGenerating ? (
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Skeleton height={20} width="80%" />
+              <Skeleton height={20} width="95%" />
+              <Skeleton height={20} width="70%" />
+              <Skeleton height={150} variant="rectangular" sx={{ borderRadius: "12px" }} />
+            </Box>
+          ) : (
+            <TextField
+              fullWidth
+              multiline
+              rows={12}
+              value={aiEmail}
+              variant="outlined"
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "16px", bgcolor: "hsla(var(--primary) / 0.03)" } }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setOpenEmail(false)} sx={{ color: colors.grey[300] }}>Close</Button>
+          <Button 
+            onClick={() => { navigator.clipboard.writeText(aiEmail); toast.success("Copied to clipboard!"); }} 
+            variant="outlined" 
+            startIcon={<CopyIcon />}
+            sx={{ borderRadius: "12px", px: 3, borderColor: "hsl(var(--primary))", color: "hsl(var(--primary))" }}
+          >
+            Copy Text
+          </Button>
+          <Button variant="contained" sx={{ bgcolor: "hsl(var(--primary))", color: "white", borderRadius: "12px", px: 4 }}>
+            Send Email
           </Button>
         </DialogActions>
       </Dialog>
