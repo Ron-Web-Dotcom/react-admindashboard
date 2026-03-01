@@ -10,6 +10,9 @@ import {
   Users, 
   BookOpen,
   ChevronRight,
+  UserPlus,
+  Briefcase,
+  Settings as SettingsIcon,
   Menu,
   X
 } from "lucide-react";
@@ -106,9 +109,16 @@ const Sidebar = ({ isSidebar }) => {
           setSelected={setSelected}
         />
         <NavItem
-          title="My Goals"
+          title="Leads Hub"
+          to="/leads"
+          icon={UserPlus}
+          selected={selected}
+          setSelected={setSelected}
+        />
+        <NavItem
+          title="Pipeline"
           to="/kanban"
-          icon={Target}
+          icon={Briefcase}
           selected={selected}
           setSelected={setSelected}
         />
@@ -137,6 +147,13 @@ const Sidebar = ({ isSidebar }) => {
           title="Resources"
           to="/faq"
           icon={BookOpen}
+          selected={selected}
+          setSelected={setSelected}
+        />
+        <NavItem
+          title="Settings"
+          to="/upgrade" // Reusing upgrade for settings/billing demo
+          icon={SettingsIcon}
           selected={selected}
           setSelected={setSelected}
         />

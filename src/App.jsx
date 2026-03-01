@@ -12,9 +12,10 @@ import Line from "./scenes/line";
 import Pie from "./scenes/pie";
 import FAQ from "./scenes/faq";
 import Geography from "./scenes/geography";
-import Kanban from "./scenes/kanban";
 import Upgrade from "./scenes/upgrade";
-import { CssBaseline, ThemeProvider, Box, Typography, Button, useMediaQuery } from "@mui/material";
+import Leads from "./scenes/leads";
+import Pipeline from "./scenes/pipeline";
+import { CssBaseline, ThemeProvider, Box, Typography, Button, useMediaQuery, Skeleton } from "@mui/material";
 import { ColorModeContext, useMode, tokens } from "./theme";
 import Calendar from "./scenes/calendar/calendar";
 import AIAgentChat from "./components/AIAgentChat";
@@ -42,10 +43,26 @@ function App() {
             name: `${user.displayName}'s Workspace`,
             subscriptionTier: 'Pro',
           });
+          
+          const orgId = defaultOrg.id;
+          
           await blink.db.users.update(user.id, { 
-            organizationId: defaultOrg.id,
+            organizationId: orgId,
             roleId: 'admin' 
           });
+
+          // MIGRATE LEGACY DATA to the new organization for seamless transition
+          const tables = ['teams', 'contacts', 'invoices', 'transactions', 'calendarEvents', 'faqs', 'kanbanTasks', 'chatMessages'];
+          for (const table of tables) {
+            try {
+              await blink.db[table].updateMany({
+                where: { userId: user.id },
+                data: { organizationId: orgId }
+              });
+            } catch (err) {
+              console.warn(`Migration skipped for ${table}:`, err);
+            }
+          }
         }
       }
     };
@@ -122,6 +139,8 @@ function App() {
             <Box flexGrow={1}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/leads" element={<Leads />} />
+                <Route path="/kanban" element={<Pipeline />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/invoices" element={<Invoices />} />
@@ -131,7 +150,6 @@ function App() {
                 <Route path="/line" element={<Line />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/calendar" element={<Calendar />} />
-                <Route path="/kanban" element={<Kanban />} />
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/geography" element={<Geography />} />
               </Routes>

@@ -72,6 +72,26 @@ export function useDashboardData() {
           { id: 'faq_5', userId: user.id, question: 'The Final Question', answer: 'This is an answer to the final question.' },
         ]);
       }
+
+      // Seed Leads for CRM demo
+      const leadCount = await blink.db.leads.count();
+      if (leadCount === 0) {
+        await blink.db.leads.createMany([
+          { id: 'lead_1', userId: user.id, organizationId: userRec?.organizationId, name: "Robert Baratheon", email: "robert@king.com", company: "Baratheon Industries", status: "Qualified", score: 85 },
+          { id: 'lead_2', userId: user.id, organizationId: userRec?.organizationId, name: "Tywin Lannister", email: "tywin@casterly.com", company: "Lannister Gold", status: "New", score: 0 },
+          { id: 'lead_3', userId: user.id, organizationId: userRec?.organizationId, name: "Ned Stark", email: "ned@winterfell.org", company: "Stark Tech", status: "Proposal", score: 92 },
+        ]);
+      }
+
+      // Seed Deals for CRM demo
+      const dealCount = await blink.db.deals.count();
+      if (dealCount === 0) {
+        await blink.db.deals.createMany([
+          { id: 'deal_1', userId: user.id, organizationId: userRec?.organizationId, leadId: 'lead_1', title: "Iron Throne Expansion", amount: 500000, stage: "Negotiation" },
+          { id: 'deal_2', userId: user.id, organizationId: userRec?.organizationId, leadId: 'lead_3', title: "Winter Tech Stack", amount: 120000, stage: "Proposal" },
+          { id: 'deal_3', userId: user.id, organizationId: userRec?.organizationId, leadId: 'lead_2', title: "Gold Mine Automation", amount: 850000, stage: "Prospecting" },
+        ]);
+      }
     } catch (err) {
       console.error('Seeding failed:', err);
     }
