@@ -1,62 +1,47 @@
-# AdminBoard Pro — AI-Powered Admin Dashboard
+# Ascend CRM — AI-Native Enterprise Growth Engine
 
-An intelligent, full-stack admin dashboard built with **React**, **Material UI**, **Nivo Charts**, and the **Blink SDK**. Features six AI-powered modules that transform a standard data dashboard into a smart command center.
+An intelligent, high-fidelity CRM and pipeline management system built with **React**, **Material UI**, and the **Blink SDK**. Ascend transforms traditional sales data into actionable enterprise intelligence using predictive AI and automated workflows.
 
 ---
 
-## Live Demo
+## Live Deployment
 
 **[https://admin-dashboard-app-o3nqai8g.sites.blink.new](https://admin-dashboard-app-o3nqai8g.sites.blink.new)**
 
 ---
 
-## 🚀 Features
+## 🚀 Enterprise Features
 
-- **📊 Modern Dashboard**: Real-time business overview with Material UI components and Nivo charts.
-- **🤖 Admin AI Assistant**: Integrated AI chat that can analyze your dashboard data using the Blink AI SDK.
-- **📅 Interactive Calendar**: Persist events to the database and manage schedules with real-time updates.
-- **📋 Real-time Kanban**: Manage tasks with drag-and-drop, synced across all active users.
-- **📈 Advanced Analytics**: AI-powered revenue forecasting and automated executive reports.
-- **👥 Enterprise Team Management**: Role-based access control (Admin, Editor, Viewer) for secure team collaboration.
-- **🔍 Global Smart Search**: Instantly find team members, contacts, or invoices across the entire CRM.
-- **🧠 AI Smart Labeling**: Context-aware categorization and priority labeling for new leads and contacts.
-- **🛠 CRM Core Features**:
-  - Contacts Management
-  - Invoice Tracking
-  - Real Transaction History
-  - User Creation Forms with Validation
-  - FAQ Knowledge Base
+- **📊 Intelligence Dashboard**: Real-time revenue velocity tracking with predictive forecasting.
+- **🤖 Ascend AI Intelligence Officer**: Integrated sales assistant that provides deal risk assessment and strategic advice.
+- **📈 Leads Hub & AI Scoring**: Automated lead capture with predictive conversion scoring (0-100) and AI-generated follow-ups.
+- **📋 Visual Sales Pipeline**: High-fidelity Kanban interface for managing high-velocity deal flows.
+- **⚡ Automation Hub**: Trigger-based workflow engine for automating repetitive sales tasks and business rules.
+- **👥 Multi-tenant Team Management**: Enterprise-grade organization isolation and role-based access controls.
+- **🔍 Global Intelligence Search**: Instant discovery of contacts, deals, and invoices across the entire workspace.
+- **💼 Finance & Invoicing**: Automated revenue settlement monitoring and financial history.
 
 ## 💻 Tech Stack
 
-- **Frontend**: React 18, Vite, Material UI (MUI)
-- **State Management**: React Hooks & Redux Toolkit
-- **Backend**: Blink SDK (Auth, Database, AI, Realtime)
-- **Database**: SQLite (managed by Blink)
-- **Charts**: Nivo, Chart.js
+- **Frontend**: React 18, Vite, Material UI (MUI), Tailwind CSS
+- **Design System**: custom Glassmorphism with Ocean Teal & Warm Amber palette
+- **Backend**: Blink SDK (Auth, Database, AI, Realtime, Analytics)
+- **Intelligence**: Google Gemini 3 Flash
+- **Charts**: Nivo & Chart.js
 - **Form Handling**: Formik & Yup
-- **Calendaring**: FullCalendar
 
-## 🛠 Project Structure
+## 🛠 Project Architecture
 
-- `src/scenes/dashboard`: Main analytics overview.
-- `src/scenes/kanban`: Real-time task management.
-- `src/scenes/global/Sidebar.jsx`: Dynamic navigation and user info.
-- `src/components/AIAgentChat.jsx`: AI Assistant implementation.
-- `src/hooks/useDashboardData.jsx`: Data fetching and initial seeding logic.
+- `src/scenes/dashboard`: Predictive analytics and executive overview.
+- `src/scenes/leads`: AI-powered lead management and scoring.
+- `src/scenes/pipeline`: Visual deal flow and revenue management.
+- `src/scenes/automation`: Workflow engine and business rule management.
+- `src/components/AIAgentChat.jsx`: Ascend AI intelligence officer.
+- `src/hooks/useDashboardData.jsx`: Multi-tenant data orchestration and seeding.
 
-## 🔐 Authentication & Access
+## 🔐 Security & Multi-tenancy
 
-AdminBoard Pro uses **Blink Auth** for secure access. The application features a dedicated authentication gate that ensures only authorized personnel can access sensitive CRM data.
-
-- **Admin**: Full access to dashboard, team management, and financial reports.
-- **Manager**: Access to contacts, invoices, and analytics.
-- **User**: Access to calendar, kanban, and personal tasks.
-
-## 📈 Database Schema
-
-The application uses a relational structure optimized for performance:
-- `users`, `teams`, `contacts`, `invoices`, `transactions`, `calendar_events`, `kanban_tasks`, `chat_messages`, `faqs`.
+Ascend CRM implements strict multi-tenant isolation. Users are auto-provisioned into organizational workspaces upon authentication, ensuring complete data privacy and row-level security.
 
 ---
 
