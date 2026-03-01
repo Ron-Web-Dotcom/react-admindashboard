@@ -19,11 +19,17 @@ const PieChart = () => {
           return acc;
         }, {});
 
+        const colorMap = {
+          admin: "hsl(var(--primary))",
+          manager: "hsl(25 95% 53%)",
+          user: "hsla(var(--primary) / 0.4)"
+        };
+
         const chartData = Object.entries(roleCounts).map(([role, count]) => ({
           id: role,
           label: role.charAt(0).toUpperCase() + role.slice(1),
           value: count,
-          color: `hsl(${Math.random() * 360}, 70%, 50%)`,
+          color: colorMap[role] || "grey",
         }));
 
         setData(chartData);
@@ -38,7 +44,7 @@ const PieChart = () => {
 
   if (loading) return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-      <CircularProgress />
+      <CircularProgress sx={{ color: "hsl(var(--primary))" }} />
     </Box>
   );
 
@@ -46,96 +52,43 @@ const PieChart = () => {
     <ResponsivePie
       data={data}
       theme={{
-        axis: {
-          domain: {
-            line: {
-              stroke: colors.grey[100],
-            },
-          },
-          legend: {
-            text: {
-              fill: colors.grey[100],
-            },
-          },
-          ticks: {
-            line: {
-              stroke: colors.grey[100],
-              strokeWidth: 1,
-            },
-            text: {
-              fill: colors.grey[100],
-            },
-          },
-        },
-        legends: {
-          text: {
-            fill: colors.grey[100],
-          },
-        },
+        legends: { text: { fill: colors.grey[300], fontWeight: "bold" } },
+        tooltip: {
+          container: {
+            background: "hsla(var(--background) / 0.95)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "12px",
+            border: "1px solid hsla(var(--primary) / 0.1)"
+          }
+        }
       }}
-      margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
-      innerRadius={0.5}
-      padAngle={0.7}
-      cornerRadius={3}
-      activeOuterRadiusOffset={8}
-      borderColor={{
-        from: "color",
-        modifiers: [["darker", 0.2]],
-      }}
+      margin={{ top: 20, right: 20, bottom: 60, left: 20 }}
+      innerRadius={0.75}
+      padAngle={2}
+      cornerRadius={12}
+      activeOuterRadiusOffset={12}
+      colors={{ datum: "data.color" }}
+      borderWidth={0}
       arcLinkLabelsSkipAngle={10}
       arcLinkLabelsTextColor={colors.grey[100]}
       arcLinkLabelsThickness={2}
       arcLinkLabelsColor={{ from: "color" }}
       enableArcLabels={false}
-      arcLabelsRadiusOffset={0.4}
-      arcLabelsSkipAngle={7}
-      arcLabelsTextColor={{
-        from: "color",
-        modifiers: [["darker", 2]],
-      }}
-      defs={[
-        {
-          id: "dots",
-          type: "patternDots",
-          background: "inherit",
-          color: "rgba(255, 255, 255, 0.3)",
-          size: 4,
-          padding: 1,
-          stagger: true,
-        },
-        {
-          id: "lines",
-          type: "patternLines",
-          background: "inherit",
-          color: "rgba(255, 255, 255, 0.3)",
-          rotation: -45,
-          lineWidth: 6,
-          spacing: 10,
-        },
-      ]}
       legends={[
         {
           anchor: "bottom",
           direction: "row",
           justify: false,
           translateX: 0,
-          translateY: 56,
-          itemsSpacing: 0,
-          itemWidth: 100,
+          translateY: 50,
+          itemsSpacing: 20,
+          itemWidth: 80,
           itemHeight: 18,
-          itemTextColor: "#999",
+          itemTextColor: colors.grey[300],
           itemDirection: "left-to-right",
           itemOpacity: 1,
-          symbolSize: 18,
+          symbolSize: 14,
           symbolShape: "circle",
-          effects: [
-            {
-              on: "hover",
-              style: {
-                itemTextColor: "#000",
-              },
-            },
-          ],
         },
       ]}
     />

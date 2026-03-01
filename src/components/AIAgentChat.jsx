@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Typography, useTheme, IconButton, Paper, TextField, InputAdornment, Collapse, CircularProgress } from "@mui/material";
+import { Box, Typography, useTheme, IconButton, Paper, TextField, InputAdornment, Collapse, CircularProgress, Avatar } from "@mui/material";
 import { tokens } from "../theme";
-import SearchIcon from "@mui/icons-material/Search";
 import { useAgent, Agent, dbTools, useBlinkAuth } from "@blinkdotnew/react";
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import CloseIcon from '@mui/icons-material/Close';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { Sparkles, X, Trash2, Send, Bot, User, BrainCircuit } from "lucide-react";
 import { blink } from "../lib/blink";
 
 const dataAgent = new Agent({
@@ -13,16 +10,16 @@ const dataAgent = new Agent({
   system: `You are the Ascend AI Sales Intelligence Officer. 
 You have direct access to the CRM's multi-tenant database.
 Available Tables & Context:
-- leads: id, name, email, company, status, score, source, organization_id. (High scores indicate high conversion probability).
+- leads: id, name, email, company, status, score, source, organization_id.
 - deals: id, title, amount, stage, expected_close_date, lead_id, organization_id.
 - teams: id, name, access, organization_id.
 - contacts: id, name, email, city, organization_id.
 
 Intelligence Directives:
 1. Fetch data using db_list based on the user's organization context.
-2. Provide strategic sales advice. (e.g., "I notice Ned Stark has a score of 92 but the Deal stage is still in 'Proposal'. We should push for 'Negotiation'").
+2. Provide strategic sales advice.
 3. Calculate pipeline totals or lead conversion rates if asked.
-4. Identify deal risks (e.g., deals with high amounts but low lead scores).
+4. Identify deal risks.
 5. Always be professional, concise, and proactive.` ,
   tools: [...dbTools],
   maxSteps: 10
@@ -48,7 +45,6 @@ const AIAgentChat = () => {
     agent: dataAgent,
     onFinish: async (message) => {
       if (user?.id) {
-        // Save assistant message
         await blink.db.chatMessages.create({
           id: `msg_${Date.now()}_assistant`,
           userId: user.id,
@@ -83,7 +79,7 @@ const AIAgentChat = () => {
 
   const handleClearHistory = async () => {
     if (!user?.id) return;
-    if (window.confirm("Clear all chat history?")) {
+    if (window.confirm("Clear intelligence history?")) {
       await blink.db.chatMessages.deleteMany({
         where: { userId: user.id }
       });
@@ -96,7 +92,6 @@ const AIAgentChat = () => {
     if (!input.trim() || !user?.id) return;
 
     const userMessageContent = input;
-    // Save user message
     await blink.db.chatMessages.create({
       id: `msg_${Date.now()}_user`,
       userId: user.id,
@@ -122,44 +117,48 @@ const AIAgentChat = () => {
   if (!isAuthenticated) return null;
 
   return (
-    <Box sx={{ position: "fixed", bottom: "30px", right: "30px", zIndex: 1000 }}>
+    <Box sx={{ position: "fixed", bottom: "32px", right: "32px", zIndex: 1000 }}>
       <Collapse in={isOpen}>
         <Paper
-          elevation={10}
+          className="glass-card"
           sx={{
-            width: "350px",
-            height: "500px",
-            backgroundColor: colors.primary[400],
+            width: "400px",
+            height: "600px",
             display: "flex",
             flexDirection: "column",
-            border: `1px solid ${colors.greenAccent[500]}66`,
-            borderRadius: "15px",
-            mb: 2,
-            overflow: "hidden"
+            mb: 3,
+            overflow: "hidden",
+            bgcolor: "white",
+            border: "1px solid hsla(var(--primary) / 0.15)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.15)"
           }}
         >
           {/* Header */}
           <Box
             sx={{
-              p: 2,
-              backgroundColor: colors.greenAccent[500],
+              p: 3,
+              background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))",
+              color: "white",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center"
             }}
           >
-            <Box display="flex" alignItems="center" gap="10px">
-              <PsychologyIcon sx={{ color: colors.primary[500] }} />
-              <Typography variant="h6" color={colors.primary[500]} fontWeight="bold">
-                Admin AI Assistant
-              </Typography>
+            <Box display="flex" alignItems="center" gap="12px">
+              <Box sx={{ p: 1, borderRadius: "10px", bgcolor: "rgba(255,255,255,0.2)" }}>
+                <BrainCircuit size={20} />
+              </Box>
+              <Box>
+                <Typography variant="h5" fontWeight="800">Ascend AI</Typography>
+                <Typography variant="caption" sx={{ opacity: 0.8, fontWeight: "bold" }}>Intelligence Officer</Typography>
+              </Box>
             </Box>
-            <Box display="flex" alignItems="center">
-              <IconButton onClick={handleClearHistory} size="small" sx={{ color: colors.primary[500] }}>
-                <DeleteOutlineIcon />
+            <Box display="flex" gap={1}>
+              <IconButton onClick={handleClearHistory} size="small" sx={{ color: "white", bgcolor: "rgba(255,255,255,0.1)" }}>
+                <Trash2 size={16} />
               </IconButton>
-              <IconButton onClick={() => setIsOpen(false)} size="small" sx={{ color: colors.primary[500] }}>
-                <CloseIcon />
+              <IconButton onClick={() => setIsOpen(false)} size="small" sx={{ color: "white", bgcolor: "rgba(255,255,255,0.1)" }}>
+                <X size={16} />
               </IconButton>
             </Box>
           </Box>
@@ -167,18 +166,17 @@ const AIAgentChat = () => {
           {/* Messages */}
           <Box 
             ref={scrollRef}
-            sx={{ flex: 1, p: 2, overflowY: "auto", display: "flex", flexDirection: "column", gap: "15px" }}
+            sx={{ flex: 1, p: 3, overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px", bgcolor: "hsla(var(--primary) / 0.01)" }}
           >
             {isHistoryLoading ? (
               <Box display="flex" justifyContent="center" py={4}>
-                <CircularProgress size={24} sx={{ color: colors.greenAccent[500] }} />
+                <CircularProgress size={24} sx={{ color: "hsl(var(--primary))" }} />
               </Box>
             ) : messages.length === 0 ? (
-              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" gap="10px" sx={{ opacity: 0.6 }}>
-                <PsychologyIcon sx={{ fontSize: "64px" }} />
-                <Typography textAlign="center">
-                  Ask me anything about your data!<br/>
-                  (e.g., "Show me top invoices", "List all admins")
+              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" gap="20px" sx={{ opacity: 0.4 }}>
+                <Bot size={64} strokeWidth={1} />
+                <Typography variant="body2" textAlign="center" fontWeight="bold">
+                  Ask me about your leads, deals,<br/>or team performance.
                 </Typography>
               </Box>
             ) : null}
@@ -188,47 +186,64 @@ const AIAgentChat = () => {
                 key={m.id}
                 sx={{
                   alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-                  backgroundColor: m.role === "user" ? colors.greenAccent[500] : colors.primary[400],
-                  color: m.role === "user" ? colors.primary[500] : colors.grey[100],
-                  p: 1.5,
-                  borderRadius: "10px",
+                  display: "flex",
+                  gap: 1.5,
                   maxWidth: "85%",
-                  border: m.role !== "user" ? `1px solid ${colors.grey[800]}` : "none",
-                  boxShadow: m.role !== "user" ? "0 2px 5px rgba(0,0,0,0.2)" : "none"
+                  flexDirection: m.role === "user" ? "row-reverse" : "row"
                 }}
               >
-                <Typography variant="body2">{m.content}</Typography>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: m.role === "user" ? "hsl(var(--primary))" : "hsla(var(--primary) / 0.1)", color: m.role === "user" ? "white" : "hsl(var(--primary))" }}>
+                  {m.role === "user" ? <User size={16} /> : <Bot size={16} />}
+                </Avatar>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: m.role === "user" ? "20px 4px 20px 20px" : "4px 20px 20px 20px",
+                    bgcolor: m.role === "user" ? "hsl(var(--primary))" : "white",
+                    color: m.role === "user" ? "white" : "inherit",
+                    border: m.role !== "user" ? "1px solid hsla(var(--primary) / 0.1)" : "none",
+                    boxShadow: m.role !== "user" ? "0 4px 12px rgba(0,0,0,0.02)" : "none"
+                  }}
+                >
+                  <Typography variant="body2" sx={{ lineHeight: 1.5 }}>{m.content}</Typography>
+                </Box>
               </Box>
             ))}
             {isLoading && (
-              <Box sx={{ alignSelf: "flex-start", backgroundColor: colors.primary[400], p: 1.5, borderRadius: "10px", border: `1px solid ${colors.grey[800]}` }}>
-                <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.8 }}>Thinking...</Typography>
+              <Box sx={{ alignSelf: "flex-start", display: "flex", gap: 1.5 }}>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: "hsla(var(--primary) / 0.1)", color: "hsl(var(--primary))" }}>
+                  <Bot size={16} className="animate-pulse" />
+                </Avatar>
+                <Box sx={{ p: 2, borderRadius: "4px 20px 20px 20px", bgcolor: "white", border: "1px solid hsla(var(--primary) / 0.1)" }}>
+                  <CircularProgress size={12} sx={{ color: "hsl(var(--primary))" }} />
+                </Box>
               </Box>
             )}
           </Box>
 
           {/* Input */}
-          <Box component="form" onSubmit={onUserSubmit} sx={{ p: 2, borderTop: `1px solid ${colors.grey[800]}`, backgroundColor: colors.primary[400] }}>
+          <Box component="form" onSubmit={onUserSubmit} sx={{ p: 3, borderTop: "1px solid hsla(var(--primary) / 0.08)", bgcolor: "white" }}>
             <TextField
               fullWidth
               variant="outlined"
               size="small"
-              placeholder="Ask a question..."
+              placeholder="Query enterprise intelligence..."
               value={input}
               onChange={handleInputChange}
               disabled={isLoading}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "20px",
-                  "& fieldset": { borderColor: colors.grey[700] },
-                  "&.Mui-focused fieldset": { borderColor: colors.greenAccent[500] }
+                  borderRadius: "14px",
+                  bgcolor: "hsla(var(--primary) / 0.02)",
+                  "& fieldset": { border: "1px solid hsla(var(--primary) / 0.1)" },
+                  "&.Mui-focused fieldset": { borderColor: "hsl(var(--primary))" }
                 }
               }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton type="submit" disabled={isLoading} sx={{ color: colors.greenAccent[500] }}>
-                      <SearchIcon />
+                    <IconButton type="submit" disabled={isLoading || !input.trim()} sx={{ color: "hsl(var(--primary))" }}>
+                      <Send size={18} />
                     </IconButton>
                   </InputAdornment>
                 )
@@ -242,15 +257,16 @@ const AIAgentChat = () => {
       <IconButton
         onClick={() => setIsOpen(!isOpen)}
         sx={{
-          backgroundColor: colors.greenAccent[500],
-          color: colors.primary[500],
-          width: "60px",
-          height: "60px",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-          "&:hover": { backgroundColor: colors.greenAccent[400] }
+          background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))",
+          color: "white",
+          width: "64px",
+          height: "64px",
+          boxShadow: "0 10px 30px hsla(var(--primary) / 0.4)",
+          transition: "var(--transition-smooth)",
+          "&:hover": { transform: "scale(1.1) rotate(5deg)", boxShadow: "0 15px 40px hsla(var(--primary) / 0.5)" }
         }}
       >
-        {isOpen ? <CloseIcon /> : <PsychologyIcon sx={{ fontSize: "32px" }} />}
+        {isOpen ? <X size={28} /> : <Sparkles size={28} />}
       </IconButton>
     </Box>
   );

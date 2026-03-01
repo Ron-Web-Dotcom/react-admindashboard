@@ -66,7 +66,6 @@ const Sidebar = ({ isSidebar }) => {
 
   return (
     <Box
-      className="sidebar-glass"
       sx={{
         width: isSidebar ? "280px" : "0",
         height: "100vh",
@@ -76,6 +75,8 @@ const Sidebar = ({ isSidebar }) => {
         flexDirection: "column",
         zIndex: 1000,
         position: { xs: "fixed", md: "relative" },
+        bgcolor: theme.palette.mode === "dark" ? "hsl(var(--secondary))" : "white",
+        borderRight: `1px solid hsla(var(--primary) / 0.1)`,
       }}
     >
       {/* LOGO */}
@@ -95,7 +96,7 @@ const Sidebar = ({ isSidebar }) => {
         >
           <Target size={24} strokeWidth={3} />
         </Box>
-        <Typography variant="h1" fontWeight="800" color="white" sx={{ letterSpacing: "-2px", fontSize: "32px" }}>
+        <Typography variant="h1" fontWeight="800" color="hsl(var(--primary))" sx={{ letterSpacing: "-2px", fontSize: "32px" }}>
           Ascend
         </Typography>
       </Box>

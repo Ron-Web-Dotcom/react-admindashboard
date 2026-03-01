@@ -1,7 +1,7 @@
 import { createContext, useState, useMemo } from "react";
 import { createTheme } from "@mui/material/styles";
 
-// color design tokens export
+// Color design tokens export
 export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
@@ -22,44 +22,18 @@ export const tokens = (mode) => ({
           300: "#80cbc4",
           400: "#1F2A40",
           500: "#042F2E", // Dark teal
-          600: "#0c101b",
-          700: "#0c101b",
-          800: "#080b12",
-          900: "#040509",
-        },
-        greenAccent: {
-          100: "#e0f2f1",
-          200: "#b2dfdb",
-          300: "#80cbc4",
-          400: "#4db6ac",
-          500: "#26a69a",
           600: "#0D9488",
-          700: "#00796b",
-          800: "#00695c",
-          900: "#004d40",
+          700: "#14B8A6",
         },
-        redAccent: {
-          100: "#ffebee",
-          200: "#ffcdd2",
-          300: "#ef9a9a",
-          400: "#e57373",
-          500: "#f44336",
-          600: "#d32f2f",
-          700: "#c62828",
-          800: "#b71c1c",
-          900: "#880e4f",
-        },
-        blueAccent: {
-          100: "#e1f5fe",
-          200: "#b3e5fc",
-          300: "#81d4fa",
-          400: "#4fc3f7",
-          500: "#29b6f6",
-          600: "#039be5",
-          700: "#0288d1",
-          800: "#0277bd",
-          900: "#01579b",
-        },
+        accent: {
+          100: "#fff7ed",
+          200: "#ffedd5",
+          300: "#fed7aa",
+          400: "#fbbf24",
+          500: "#f59e0b",
+          600: "#d97706",
+          700: "#b45309",
+        }
       }
     : {
         grey: {
@@ -77,50 +51,22 @@ export const tokens = (mode) => ({
           100: "#042F2E",
           200: "#004d40",
           300: "#00695c",
-          400: "#FFFFFF", // Glass background (pure white)
-          500: "#F7F6F0", // Page background (Creamy White from image)
-          600: "#d1d1d1",
-          700: "#b3b3b3",
-          800: "#949494",
-          900: "#757575",
+          400: "#FFFFFF", 
+          500: "#F7F6F0", 
         },
-        greenAccent: {
-          100: "#004d40",
-          200: "#00695c",
-          300: "#00796b",
-          400: "#0D9488",
-          500: "#26a69a",
-          600: "#4db6ac",
-          700: "#80cbc4",
-          800: "#b2dfdb",
-          900: "#e0f2f1",
-        },
-        redAccent: {
-          100: "#880e4f",
-          200: "#b71c1c",
-          300: "#c62828",
-          400: "#d32f2f",
-          500: "#f44336",
-          600: "#e57373",
-          700: "#ef9a9a",
-          800: "#ffcdd2",
-          900: "#ffebee",
-        },
-        blueAccent: {
-          100: "#01579b",
-          200: "#0277bd",
-          300: "#0288d1",
-          400: "#039be5",
-          500: "#29b6f6",
-          600: "#4fc3f7",
-          700: "#81d4fa",
-          800: "#b3e5fc",
-          900: "#e1f5fe",
-        },
+        accent: {
+          100: "#fff7ed",
+          200: "#ffedd5",
+          300: "#fed7aa",
+          400: "#fbbf24",
+          500: "#f59e0b",
+          600: "#d97706",
+          700: "#b45309",
+        }
       }),
 });
 
-// mui theme settings
+// MUI theme settings
 export const themeSettings = (mode) => {
   const colors = tokens(mode);
   return {
@@ -128,82 +74,91 @@ export const themeSettings = (mode) => {
       mode: mode,
       ...(mode === "dark"
         ? {
-            // palette values for dark mode
             primary: {
-              main: colors.primary[500],
+              main: "#0D9488", // Ocean Teal
             },
             secondary: {
-              main: colors.greenAccent[600],
+              main: "#F97316", // Warm Amber
             },
             neutral: {
-              dark: colors.grey[700],
-              main: colors.grey[500],
-              light: colors.grey[100],
+              dark: "#474747",
+              main: "#757575",
+              light: "#f0f0f0",
             },
             background: {
-              default: colors.primary[500],
-              paper: colors.primary[400],
+              default: "#042F2E",
+              paper: "#043F3D",
             },
             text: {
-              primary: colors.grey[100],
-              secondary: colors.grey[300],
+              primary: "#f0f0f0",
+              secondary: "#b3b3b3",
             }
           }
         : {
-            // palette values for light mode
             primary: {
-              main: colors.primary[500],
+              main: "#0D9488",
             },
             secondary: {
-              main: colors.greenAccent[600],
+              main: "#F97316",
             },
             neutral: {
-              dark: colors.grey[700],
-              main: colors.grey[500],
-              light: colors.grey[100],
+              dark: "#b3b3b3",
+              main: "#757575",
+              light: "#141414",
             },
             background: {
-              default: colors.primary[500],
-              paper: colors.primary[400],
+              default: "#F7F6F0",
+              paper: "#FFFFFF",
             },
             text: {
-              primary: colors.grey[100],
-              secondary: colors.grey[300],
+              primary: "#141414",
+              secondary: "#474747",
             }
           }),
     },
     typography: {
-      fontFamily: ["Geist Sans", "sans-serif"].join(","),
+      fontFamily: ["Geist Sans", "Manrope", "sans-serif"].join(","),
       fontSize: 14,
       h1: {
         fontFamily: ["Geist Sans", "sans-serif"].join(","),
         fontSize: 48,
         fontWeight: 700,
+        letterSpacing: "-0.04em",
       },
       h2: {
         fontFamily: ["Geist Sans", "sans-serif"].join(","),
-        fontSize: 32,
-        fontWeight: 600,
+        fontSize: 36,
+        fontWeight: 700,
+        letterSpacing: "-0.03em",
       },
       h3: {
         fontFamily: ["Geist Sans", "sans-serif"].join(","),
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 600,
+        letterSpacing: "-0.02em",
       },
       h4: {
-        fontFamily: ["Geist Sans", "sans-serif"].join(","),
+        fontFamily: ["Manrope", "sans-serif"].join(","),
         fontSize: 20,
-        fontWeight: 500,
+        fontWeight: 600,
       },
       h5: {
-        fontFamily: ["Geist Sans", "sans-serif"].join(","),
+        fontFamily: ["Manrope", "sans-serif"].join(","),
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: 600,
       },
       h6: {
-        fontFamily: ["Geist Sans", "sans-serif"].join(","),
+        fontFamily: ["Manrope", "sans-serif"].join(","),
         fontSize: 14,
-        fontWeight: 400,
+        fontWeight: 500,
+      },
+      body1: {
+        fontFamily: ["Manrope", "sans-serif"].join(","),
+        fontSize: 16,
+      },
+      body2: {
+        fontFamily: ["Manrope", "sans-serif"].join(","),
+        fontSize: 14,
       },
     },
     shape: {
@@ -216,27 +171,57 @@ export const themeSettings = (mode) => {
             textTransform: "none",
             borderRadius: 12,
             fontWeight: 600,
+            padding: "8px 24px",
+            boxShadow: "none",
+            "&:hover": {
+              boxShadow: "0 8px 16px hsla(var(--primary) / 0.15)",
+            }
           },
+          containedPrimary: {
+            background: "hsl(var(--primary))",
+            "&:hover": {
+              background: "hsl(var(--primary-glow))",
+            }
+          }
         },
       },
       MuiPaper: {
         styleOverrides: {
           root: {
             borderRadius: 24,
+            boxShadow: "0 10px 40px -10px hsla(var(--primary) / 0.08)",
+            border: "1px solid hsla(var(--primary) / 0.1)",
           },
         },
       },
+      MuiDataGrid: {
+        styleOverrides: {
+          root: {
+            border: "none",
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid hsla(var(--primary) / 0.05)",
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "hsla(var(--primary) / 0.05)",
+              borderBottom: "none",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "none",
+              backgroundColor: "hsla(var(--primary) / 0.05)",
+            },
+          }
+        }
+      }
     },
   };
 };
 
-// context for color mode
 export const ColorModeContext = createContext({
   toggleColorMode: () => {},
 });
 
 export const useMode = () => {
-  const [mode, setMode] = useState(localStorage.getItem("theme") || "dark");
+  const [mode, setMode] = useState(localStorage.getItem("theme") || "light");
 
   const colorMode = useMemo(
     () => ({

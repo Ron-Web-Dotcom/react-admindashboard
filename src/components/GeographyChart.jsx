@@ -15,10 +15,6 @@ const GeographyChart = ({ isDashboard = false }) => {
     const fetchData = async () => {
       try {
         const contacts = await blink.db.contacts.list();
-        
-        // nivo geography needs ISO country codes. 
-        // Our contacts have 'city'. I'll map some cities to dummy country codes 
-        // to make it look functional.
         const cityToCountry = {
           "New York": "USA",
           "London": "GBR",
@@ -30,14 +26,14 @@ const GeographyChart = ({ isDashboard = false }) => {
         };
 
         const countryCounts = contacts.reduce((acc, contact) => {
-          const country = cityToCountry[contact.city] || "USA"; // default to USA for demo
+          const country = cityToCountry[contact.city] || "USA";
           acc[country] = (acc[country] || 0) + 1;
           return acc;
         }, {});
 
         const chartData = Object.entries(countryCounts).map(([id, count]) => ({
           id,
-          value: count * 100000, // scaling for visual impact in choropleth
+          value: count * 100000,
         }));
 
         setData(chartData);
@@ -52,7 +48,7 @@ const GeographyChart = ({ isDashboard = false }) => {
 
   if (loading) return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-      <CircularProgress />
+      <CircularProgress sx={{ color: "hsl(var(--primary))" }} />
     </Box>
   );
 
@@ -61,44 +57,42 @@ const GeographyChart = ({ isDashboard = false }) => {
       data={data}
       theme={{
         axis: {
-          domain: {
-            line: {
-              stroke: colors.grey[100],
-            },
-          },
-          legend: {
-            text: {
-              fill: colors.grey[100],
-            },
-          },
+          domain: { line: { stroke: "transparent" } },
+          legend: { text: { fill: colors.grey[300] } },
           ticks: {
-            line: {
-              stroke: colors.grey[100],
-              strokeWidth: 1,
-            },
-            text: {
-              fill: colors.grey[100],
-            },
+            line: { stroke: "transparent" },
+            text: { fill: colors.grey[300] },
           },
         },
-        legends: {
-          text: {
-            fill: colors.grey[100],
-          },
-        },
+        legends: { text: { fill: colors.grey[300], fontWeight: "bold" } },
+        tooltip: {
+          container: {
+            background: "hsla(var(--background) / 0.95)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "12px",
+            border: "1px solid hsla(var(--primary) / 0.1)"
+          }
+        }
       }}
       features={geoFeatures.features}
       margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-      colors="greens"
+      colors={[
+        "hsla(var(--primary) / 0.1)",
+        "hsla(var(--primary) / 0.2)",
+        "hsla(var(--primary) / 0.4)",
+        "hsla(var(--primary) / 0.6)",
+        "hsla(var(--primary) / 0.8)",
+        "hsl(var(--primary))"
+      ]}
       domain={[0, 1000000]}
-      unknownColor="#e0e0e0"
+      unknownColor="hsla(var(--primary) / 0.05)"
       label="properties.name"
       valueFormat=".2s"
       projectionScale={isDashboard ? 40 : 150}
       projectionTranslation={isDashboard ? [0.49, 0.6] : [0.5, 0.5]}
       projectionRotation={[0, 0, 0]}
       borderWidth={0.5}
-      borderColor="hsl(var(--primary))"
+      borderColor="hsla(var(--background) / 0.5)"
       legends={
         !isDashboard
           ? [

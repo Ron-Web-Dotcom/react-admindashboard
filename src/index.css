@@ -1,80 +1,112 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Manrope:wght@200..800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --primary: 171 77% 31%; /* Mint Green */
-  --primary-glow: 171 77% 45%;
-  --secondary: 171 20% 45%;
-  --background: 45 29% 96%; /* Creamy White */
+  /* Ocean Teal + Warm Amber Palette */
+  --primary: 173 80% 31%; /* #0D9488 */
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 173 80% 45%;
+  
+  --secondary: 48 33% 95%; /* #F7F6F0 - Creamy Background */
+  --secondary-foreground: 222 47% 11%;
+  
+  --accent: 25 95% 53%; /* #F97316 - Orange Accent */
+  --accent-foreground: 0 0% 100%;
+  
+  --background: 48 33% 96%; /* #F7F6F0 */
   --foreground: 222 47% 11%;
   
-  --glass-bg: 255 255% 255% / 0.75;
-  --glass-border: 255 255% 255% / 0.6;
-  --glass-blur: blur(24px);
+  --card: 0 0% 100% / 0.85;
+  --card-foreground: 222 47% 11%;
   
-  --shadow-glass: 0 12px 40px -12px rgba(0, 0, 0, 0.08);
-  --shadow-3d: 0 20px 40px -15px rgba(0, 0, 0, 0.12);
-  --sidebar-glass: 222 47% 11% / 0.94;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
   
-  --transition-smooth: all 0.5s cubic-bezier(0.2, 0.0, 0.2, 1);
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  
+  --border: 173 80% 31% / 0.12;
+  --input: 173 80% 31% / 0.08;
+  --ring: 173 80% 31%;
+  
+  --radius: 2rem;
+  
+  --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-elegant: 0 10px 40px -10px hsl(var(--primary) / 0.15);
+  --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.25);
 }
 
 .dark {
-  --background: 224 71% 4%;
-  --foreground: 213 31% 91%;
-  --glass-bg: 15 15% 15% / 0.75;
-  --glass-border: 255 255% 255% / 0.12;
-  --shadow-glass: 0 20px 50px rgba(0, 0, 0, 0.4);
-  --shadow-3d: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+  --primary: 173 80% 31%;
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 180 84% 5%; /* #042F2E - Dark Mode Background */
+  --secondary-foreground: 210 40% 98%;
+  
+  --accent: 25 95% 53%;
+  --accent-foreground: 0 0% 100%;
+  
+  --background: 180 84% 4%;
+  --foreground: 210 40% 98%;
+  
+  --card: 180 84% 6% / 0.85;
+  --card-foreground: 210 40% 98%;
+  
+  --popover: 180 84% 4%;
+  --popover-foreground: 210 40% 98%;
+  
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  
+  --border: 173 80% 31% / 0.25;
+  --input: 173 80% 31% / 0.2;
+  --ring: 173 80% 31%;
+}
+
+* {
+  border-color: hsl(var(--border));
 }
 
 html,
 body,
-#root,
-.app,
-.content {
+#root {
   height: 100%;
   width: 100%;
-  font-family: "Geist Sans", sans-serif;
-  background-color: transparent !important;
+  font-family: "Geist Sans", "Manrope", sans-serif;
+  background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+  overflow: hidden;
 }
 
+/* Glassmorphism Classes */
 .glass-card {
-  background: hsla(var(--glass-bg));
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid hsla(var(--glass-border));
-  box-shadow: var(--shadow-glass);
-  border-radius: 2.5rem;
+  background: hsla(var(--card));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsla(var(--border));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-elegant);
   transition: var(--transition-smooth);
 }
 
 .glass-card:hover {
   transform: translateY(-6px) scale(1.01);
-  box-shadow: var(--shadow-3d);
+  box-shadow: 0 30px 60px -20px hsl(var(--primary) / 0.25);
+  border-color: hsla(var(--primary) / 0.4);
 }
 
-.three-d-ring {
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 0 10px 20px hsla(var(--primary) / 0.2);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+.glass-nav {
+  background: hsla(var(--background) / 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid hsla(var(--border));
 }
 
-.sidebar-glass {
-  background: hsla(var(--sidebar-glass));
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -82,10 +114,72 @@ body,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsla(var(--primary) / 0.2);
+  background: hsla(var(--primary) / 0.25);
   border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsla(var(--primary) / 0.4);
+  background: hsla(var(--primary) / 0.45);
+  background-clip: content-box;
+}
+
+/* 3D and Glow Effects */
+.three-d-ring {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.three-d-ring:hover {
+  transform: rotateY(20deg) rotateX(15deg);
+}
+
+.glow-on-hover:hover {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Animations */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; filter: blur(4px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 1.2s ease-out forwards;
+}
+
+/* Text Enhancements */
+.text-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Nivo Chart Customization overrides */
+[style*="font-family"] {
+  font-family: "Geist Sans", sans-serif !important;
+}
+
+/* Hide MUI specific scrollbar hacks if any */
+.MuiDataGrid-root ::-webkit-scrollbar {
+  display: block !important;
 }
